@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#040706" />
+<title>Fanhour — Breaking the Walls of the Stadium</title>
+<meta name="description" content="Fanhour is a Saudi fan-engagement platform connecting regional Saudi Pro League clubs, their supporters and local SMEs through affordable digital sponsorship." />
+
+<meta property="og:title" content="Fanhour — Breaking the Walls of the Stadium" />
+<meta property="og:description" content="Regional clubs seat 5,000. Their local economies are worth billions. Fanhour closes the gap." />
+<meta property="og:type" content="website" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   0. TOKENS
+   ============================================================ */
+:root{
+  --ink:            #040706;
+  --ink-2:          #070C0A;
+  --panel:          #0A1210;
+  --panel-2:        #0E1A16;
+
+  --emerald-950:    #03211A;
+  --emerald-900:    #052E20;
+  --emerald-700:    #06724C;
+  --emerald:        #0FA968;
+  --emerald-lit:    #00E676;
+
+  --gold:           #D8B25F;
+  --gold-lit:       #F4D89B;
+
+  --white:          #F5FAF7;
+  --muted:          #8DA79B;
+  --muted-dim:      #5E7268;
+
+  --line:           rgba(255,255,255,.09);
+  --line-strong:    rgba(255,255,255,.18);
+
+  --danger:         #E0654F;
+
+  --font: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --container: 1240px;
+  --radius: 20px;
+  --radius-sm: 12px;
+
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --ease-out-expo: cubic-bezier(.16,1,.3,1);
+
+  --nav-h: 74px;
+}
+
+/* ============================================================
+   1. RESET / BASE
+   ============================================================ */
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--white);
+  font-family:var(--font);
+  font-weight:400;
+  line-height:1.6;
+  letter-spacing:-.011em;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+h1,h2,h3,h4{ margin:0; font-weight:600; letter-spacing:-.035em; line-height:1.04; }
+p{ margin:0; }
+ul{ margin:0; padding:0; list-style:none; }
+::selection{ background:var(--emerald-lit); color:#04120C; }
+
+/* Layout helpers ------------------------------------------------ */
+.container{ width:100%; max-width:var(--container); margin-inline:auto; padding-inline:clamp(20px,5vw,48px); }
+.section{ position:relative; padding-block:clamp(96px,14vh,180px); }
+.stack-lg > * + *{ margin-top:28px; }
+.stack   > * + *{ margin-top:16px; }
+
+/* Type scale ---------------------------------------------------- */
+.display{ font-size:clamp(2.9rem,8.4vw,7.1rem); line-height:.94; font-weight:600; letter-spacing:-.045em; }
+.h1{ font-size:clamp(2.2rem,5.6vw,4.4rem); letter-spacing:-.04em; }
+.h2{ font-size:clamp(1.7rem,3.4vw,2.6rem); }
+.h3{ font-size:clamp(1.15rem,1.8vw,1.4rem); letter-spacing:-.025em; }
+.lead{ font-size:clamp(1.02rem,1.35vw,1.22rem); color:var(--muted); max-width:62ch; line-height:1.68; }
+.body{ color:var(--muted); font-size:1rem; line-height:1.72; max-width:60ch; }
+.tiny{ font-size:.78rem; color:var(--muted-dim); }
+
+.eyebrow{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:.72rem; font-weight:500;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--gold);
+}
+.eyebrow::before{
+  content:""; width:26px; height:1px; background:linear-gradient(90deg,transparent,var(--gold));
+}
+.eyebrow.is-emerald{ color:var(--emerald-lit); }
+.eyebrow.is-emerald::before{ background:linear-gradient(90deg,transparent,var(--emerald-lit)); }
+
+.grad-em{
+  background:linear-gradient(102deg,var(--emerald-lit) 0%,#5FE0A8 42%,var(--gold-lit) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.grad-gold{
+  background:linear-gradient(100deg,var(--gold-lit),var(--gold) 55%,#8A6B2A);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.num{ font-family:var(--mono); font-weight:500; font-variant-numeric:tabular-nums; letter-spacing:-.03em; }
+
+/* Buttons ------------------------------------------------------- */
+.btn{
+  --btn-bg:var(--emerald-lit);
+  position:relative; display:inline-flex; align-items:center; gap:10px;
+  padding:15px 26px; border-radius:100px;
+  background:var(--btn-bg); color:#03150D;
+  font-weight:600; font-size:.94rem; letter-spacing:-.01em;
+  overflow:hidden; isolation:isolate;
+  transition:transform .45s var(--ease), box-shadow .45s var(--ease);
+  box-shadow:0 8px 30px -10px rgba(0,230,118,.55);
+}
+.btn::after{
+  content:""; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(100deg,var(--gold-lit),var(--gold));
+  opacity:0; transition:opacity .4s var(--ease);
+}
+.btn:hover{ transform:translateY(-3px); box-shadow:0 16px 44px -12px rgba(244,216,155,.5); }
+.btn:hover::after{ opacity:1; }
+.btn svg{ transition:transform .4s var(--ease); }
+.btn:hover svg{ transform:translateX(4px); }
+
+.btn-ghost{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:14px 24px; border-radius:100px;
+  border:1px solid var(--line-strong); color:var(--white);
+  font-weight:500; font-size:.92rem;
+  transition:border-color .4s var(--ease), background .4s var(--ease), transform .4s var(--ease);
+}
+.btn-ghost:hover{ border-color:rgba(0,230,118,.55); background:rgba(0,230,118,.07); transform:translateY(-2px); }
+
+/* Surfaces ------------------------------------------------------ */
+.card{
+  position:relative;
+  background:linear-gradient(168deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  overflow:hidden;
+}
+.card::before{
+  content:""; position:absolute; inset:0 0 auto; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  opacity:.6;
+}
+.grain{
+  position:fixed; inset:0; z-index:9998; pointer-events:none; opacity:.4;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.34'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   2. REVEAL SYSTEM
+   ============================================================ */
+[data-reveal]{
+  opacity:0;
+  transition:opacity 1.05s var(--ease-out-expo), transform 1.05s var(--ease-out-expo), clip-path 1.15s var(--ease-out-expo);
+  transition-delay:var(--d,0ms);
+  will-change:opacity,transform;
+}
+[data-reveal="up"]{ transform:translate3d(0,42px,0); }
+[data-reveal="down"]{ transform:translate3d(0,-30px,0); }
+[data-reveal="left"]{ transform:translate3d(-46px,0,0); }
+[data-reveal="right"]{ transform:translate3d(46px,0,0); }
+[data-reveal="zoom"]{ transform:scale(.9); }
+[data-reveal="mask"]{ clip-path:inset(0 0 100% 0); transform:translate3d(0,18px,0); }
+[data-reveal].in{ opacity:1; transform:none; clip-path:inset(0 0 0 0); }
+
+/* word-by-word headline */
+.words{ display:block; }
+.word{ display:inline-block; overflow:hidden; vertical-align:top; }
+.word > span{
+  display:inline-block; transform:translateY(105%) rotate(4deg);
+  transition:transform 1.15s var(--ease-out-expo);
+  transition-delay:var(--d,0ms);
+}
+.words.in .word > span{ transform:none; }
+
+/* ============================================================
+   3. NAV + SCROLL PROGRESS
+   ============================================================ */
+.progress{
+  position:fixed; top:0; left:0; height:2px; width:100%; z-index:9999;
+  transform-origin:0 50%; transform:scaleX(var(--sp,0));
+  background:linear-gradient(90deg,var(--emerald-lit),var(--gold-lit));
+  box-shadow:0 0 16px rgba(0,230,118,.6);
+}
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:900; height:var(--nav-h);
+  display:flex; align-items:center;
+  transition:background .5s var(--ease), border-color .5s var(--ease), backdrop-filter .5s;
+  border-bottom:1px solid transparent;
+}
+.nav.stuck{
+  background:rgba(4,7,6,.72);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom-color:var(--line);
+}
+.nav__inner{ display:flex; align-items:center; justify-content:space-between; gap:24px; width:100%; }
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand__mark{
+  position:relative; width:34px; height:34px; border-radius:11px;
+  background:conic-gradient(from 210deg,var(--emerald-lit),var(--emerald-700) 40%,var(--gold) 78%,var(--emerald-lit));
+  display:grid; place-items:center;
+  box-shadow:0 0 0 1px rgba(255,255,255,.12), 0 6px 22px -8px rgba(0,230,118,.7);
+}
+.brand__mark::after{
+  content:""; position:absolute; inset:4px; border-radius:8px; background:var(--ink);
+}
+.brand__mark span{
+  position:relative; z-index:1; font-weight:700; font-size:.85rem;
+  background:linear-gradient(150deg,var(--emerald-lit),var(--gold-lit));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.brand__name{ font-weight:600; letter-spacing:-.03em; font-size:1.06rem; }
+.brand__ar{ font-size:.72rem; color:var(--muted-dim); letter-spacing:0; margin-inline-start:6px; }
+
+.nav__links{ display:flex; align-items:center; gap:34px; }
+.nav__links a{
+  position:relative; font-size:.86rem; color:var(--muted); letter-spacing:-.005em;
+  transition:color .35s var(--ease);
+}
+.nav__links a::after{
+  content:""; position:absolute; left:0; bottom:-6px; height:1px; width:100%;
+  background:var(--emerald-lit); transform:scaleX(0); transform-origin:100% 50%;
+  transition:transform .45s var(--ease);
+}
+.nav__links a:hover{ color:var(--white); }
+.nav__links a:hover::after{ transform:scaleX(1); transform-origin:0 50%; }
+.nav__cta{ display:inline-flex; white-space:nowrap; }
+.cta-short{ display:none; }
+
+/* section rail */
+.rail{
+  position:fixed; right:24px; top:50%; transform:translateY(-50%); z-index:880;
+  display:flex; flex-direction:column; gap:14px;
+}
+.rail button{
+  width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.2);
+  transition:all .4s var(--ease); position:relative;
+}
+.rail button::after{
+  content:attr(data-label); position:absolute; right:20px; top:50%; transform:translateY(-50%) translateX(6px);
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); white-space:nowrap; opacity:0; transition:all .4s var(--ease); pointer-events:none;
+}
+.rail button:hover::after{ opacity:1; transform:translateY(-50%); }
+.rail button.on{ background:var(--emerald-lit); box-shadow:0 0 0 4px rgba(0,230,118,.16); height:20px; border-radius:6px; }
+
+/* ============================================================
+   4. HERO
+   ============================================================ */
+.hero{
+  position:relative; min-height:100svh; display:flex; align-items:flex-end;
+  padding-top:calc(var(--nav-h) + 40px); padding-bottom:clamp(48px,8vh,90px);
+  overflow:hidden; isolation:isolate;
+}
+.hero__sky{
+  position:absolute; inset:-10% -10% 0; z-index:-6;
+  background:
+    radial-gradient(120% 78% at 50% 108%, rgba(15,169,104,.30) 0%, transparent 62%),
+    radial-gradient(60% 50% at 82% 8%, rgba(216,178,95,.16) 0%, transparent 70%),
+    radial-gradient(70% 55% at 12% 12%, rgba(6,114,76,.22) 0%, transparent 72%),
+    linear-gradient(180deg,#040706 0%,#050D0A 42%,#03211A 100%);
+}
+/* stadium floodlight beams */
+.beam{
+  position:absolute; bottom:6%; width:34vw; height:78vh; z-index:-5;
+  background:linear-gradient(to top,rgba(0,230,118,.16),transparent 72%);
+  filter:blur(26px); opacity:.85;
+  animation:beamPulse 7s var(--ease) infinite alternate;
+}
+.beam--l{ left:-6vw; transform:translate3d(0,var(--py,0px),0) rotate(13deg) skewX(-9deg); }
+.beam--r{ right:-6vw; transform:translate3d(0,var(--py,0px),0) rotate(-13deg) skewX(9deg); animation-delay:-3.2s;
+  background:linear-gradient(to top,rgba(216,178,95,.15),transparent 72%); }
+@keyframes beamPulse{ from{opacity:.5} to{opacity:1} }
+
+/* distant stadium bowl, CSS only */
+.hero__bowl{
+  position:absolute; left:50%; bottom:-32vh; width:min(1060px,112vw); aspect-ratio:1.9/1;
+  transform:translate3d(-50%,var(--py,0px),0); z-index:-4;
+  opacity:.62; filter:blur(1px);
+}
+.bowl__ring{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  border-radius:50%;
+  border:1px solid rgba(0,230,118,.16);
+  background:radial-gradient(closest-side,transparent 58%,rgba(3,33,26,.5));
+}
+.bowl__ring:nth-child(1){ width:100%; height:100%; border-color:rgba(0,230,118,.12); }
+.bowl__ring:nth-child(2){ width:80%;  height:80%;  border-color:rgba(216,178,95,.14); }
+.bowl__ring:nth-child(3){ width:60%;  height:60%;  border-color:rgba(0,230,118,.22); }
+.bowl__seats{
+  position:absolute; inset:0; border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(0,230,118,.16) 0 1.1deg,transparent 1.1deg 2.6deg);
+  -webkit-mask:radial-gradient(closest-side,transparent 44%,#000 46%);
+  mask:radial-gradient(closest-side,transparent 44%,#000 46%);
+  opacity:.5; filter:blur(.5px);
+}
+.bowl__pitch{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  width:40%; height:40%; border-radius:50%;
+  background:
+    radial-gradient(closest-side,rgba(0,230,118,.34),rgba(0,230,118,.08)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 16px,transparent 16px 32px);
+  box-shadow:0 0 120px rgba(0,230,118,.35), inset 0 0 0 1px rgba(255,255,255,.14);
+}
+.bowl__pylon{
+  position:absolute; width:9px; height:9px; border-radius:50%;
+  background:var(--gold-lit);
+  box-shadow:0 0 22px 6px rgba(244,216,155,.55);
+  animation:pylon 5s var(--ease) infinite alternate;
+}
+.bowl__pylon:nth-of-type(1){ left:8%;  top:16%; }
+.bowl__pylon:nth-of-type(2){ right:8%; top:16%; animation-delay:-1.4s; }
+.bowl__pylon:nth-of-type(3){ left:2%;  top:62%; animation-delay:-2.6s; }
+.bowl__pylon:nth-of-type(4){ right:2%; top:62%; animation-delay:-3.7s; }
+@keyframes pylon{ from{opacity:.45} to{opacity:1} }
+/* crowd speckle */
+.hero__crowd{
+  position:absolute; inset:auto 0 0; height:46vh; z-index:-3; opacity:.5;
+  background-image:
+    radial-gradient(1.6px 1.6px at 12% 30%, rgba(0,230,118,.55), transparent 60%),
+    radial-gradient(1.4px 1.4px at 28% 62%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1.8px 1.8px at 47% 18%, rgba(216,178,95,.5), transparent 60%),
+    radial-gradient(1.4px 1.4px at 63% 55%, rgba(255,255,255,.3), transparent 60%),
+    radial-gradient(1.6px 1.6px at 78% 34%, rgba(0,230,118,.45), transparent 60%),
+    radial-gradient(1.4px 1.4px at 91% 68%, rgba(255,255,255,.32), transparent 60%);
+  background-size:230px 190px;
+  transform:translate3d(0,var(--py,0px),0);
+  animation:crowdShift 12s linear infinite alternate;
+}
+@keyframes crowdShift{ from{ background-position:0 0 } to{ background-position:40px -18px } }
+.hero__vig{
+  position:absolute; inset:0; z-index:-2; pointer-events:none;
+  background:
+    linear-gradient(100deg,rgba(4,7,6,.9) 0%,rgba(4,7,6,.5) 42%,transparent 72%),
+    radial-gradient(110% 80% at 50% 40%,transparent 40%,rgba(4,7,6,.72) 100%);
+}
+
+.hero__inner{ width:100%; }
+.hero__top{ display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin-bottom:clamp(28px,5vh,54px); }
+.pill{
+  display:inline-flex; align-items:center; gap:9px;
+  padding:8px 15px; border-radius:100px;
+  border:1px solid var(--line-strong); background:rgba(255,255,255,.045);
+  font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  backdrop-filter:blur(10px);
+}
+.dot-live{
+  width:6px; height:6px; border-radius:50%; background:var(--emerald-lit);
+  box-shadow:0 0 0 0 rgba(0,230,118,.7); animation:ping 2.2s var(--ease) infinite;
+}
+@keyframes ping{
+  0%{ box-shadow:0 0 0 0 rgba(0,230,118,.65) }
+  70%{ box-shadow:0 0 0 10px rgba(0,230,118,0) }
+  100%{ box-shadow:0 0 0 0 rgba(0,230,118,0) }
+}
+
+.hero h1{ max-width:15ch; }
+.hero__grid{
+  display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,.85fr);
+  gap:clamp(28px,5vw,72px); align-items:end;
+}
+.hero__aside{ padding-bottom:8px; }
+.hero__stats{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+  margin-top:clamp(38px,6vh,64px);
+  background:var(--line); border-block:1px solid var(--line);
+}
+.stat{ background:var(--ink); padding:22px clamp(14px,2vw,26px); }
+.stat__n{ font-size:clamp(1.5rem,3vw,2.3rem); display:block; }
+.stat__l{ font-size:.74rem; color:var(--muted-dim); letter-spacing:.1em; text-transform:uppercase; font-family:var(--mono); margin-top:6px; }
+
+.scrollcue{
+  position:absolute; right:clamp(14px,2.6vw,32px); bottom:clamp(16px,3vh,30px);
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:.62rem; letter-spacing:.24em; text-transform:uppercase; color:var(--muted-dim);
+}
+.scrollcue__line{ width:1px; height:44px; background:linear-gradient(var(--emerald-lit),transparent); position:relative; overflow:hidden; }
+.scrollcue__line::after{
+  content:""; position:absolute; inset:0; background:var(--gold-lit);
+  animation:cue 2.4s var(--ease) infinite;
+}
+@keyframes cue{ 0%{transform:translateY(-100%)} 60%,100%{transform:translateY(100%)} }
+
+/* ============================================================
+   5. SCENE ENGINE (sticky / pinned scroll sections)
+   ============================================================ */
+.scene{ position:relative; }
+.scene__stage{
+  position:sticky; top:0; height:100svh; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.scene--disconnect{ height:320vh; }
+.scene--barrier{ height:300vh; }
+.scene--break{ height:420vh; }
+
+.scene__caption{
+  position:absolute; left:0; right:0; bottom:clamp(24px,5vh,54px); z-index:6;
+  text-align:center; pointer-events:none;
+}
+.cap{
+  opacity:0; transform:translateY(16px); transition:opacity .45s var(--ease), transform .45s var(--ease);
+  position:absolute; left:0; right:0; bottom:0; padding-inline:24px;
+}
+.cap.on{ opacity:1; transform:none; }
+.cap p{ margin-inline:auto; }
+
+/* ---- 5a. DISCONNECT SPLIT ---- */
+.split{ position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; }
+.split__half{ position:relative; overflow:hidden; display:grid; place-items:center; }
+.split__half--stadium{
+  background:
+    radial-gradient(80% 70% at 50% 100%,rgba(6,114,76,.35),transparent 70%),
+    linear-gradient(180deg,#050D0A,#03211A);
+}
+.split__half--city{
+  background:
+    radial-gradient(80% 70% at 50% 100%,rgba(216,178,95,.24),transparent 70%),
+    linear-gradient(180deg,#080705,#1A1206);
+}
+.split__half::after{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(90% 70% at 50% 50%,transparent 30%,rgba(4,7,6,.6));
+}
+.split__content{ position:relative; z-index:3; text-align:center; padding:clamp(20px,4vw,44px); }
+.split__label{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.24em; text-transform:uppercase; color:var(--muted);
+}
+.split__num{ font-size:clamp(2.6rem,7vw,6rem); display:block; margin-block:8px 4px; line-height:1; }
+.split__sub{ color:var(--muted); font-size:.92rem; max-width:32ch; margin-inline:auto; }
+
+/* tiny stadium built from CSS */
+.mini-stadium{ position:relative; width:min(320px,52vw); aspect-ratio:1.7/1; margin-inline:auto; margin-bottom:26px; }
+.mini-stadium i{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  border-radius:50%; border:1px solid rgba(0,230,118,.28);
+}
+.mini-stadium i:nth-child(1){
+  width:100%; height:100%;
+  background:repeating-conic-gradient(from 0deg,rgba(0,230,118,.22) 0 1.4deg,transparent 1.4deg 3.2deg);
+  -webkit-mask:radial-gradient(closest-side,transparent 72%,#000 74%);
+  mask:radial-gradient(closest-side,transparent 72%,#000 74%);
+}
+.mini-stadium i:nth-child(2){ width:76%; height:76%; border-color:rgba(0,230,118,.4); }
+.mini-stadium i:nth-child(3){
+  width:52%; height:52%; border:0;
+  background:radial-gradient(ellipse,rgba(0,230,118,.32),rgba(0,230,118,.05));
+  box-shadow:0 0 60px rgba(0,230,118,.35);
+}
+.mini-stadium::after{
+  content:"CAPACITY REACHED"; white-space:nowrap;
+  position:absolute; left:50%; bottom:-14px; translate:-50% 0;
+  font-family:var(--mono); font-size:.56rem; letter-spacing:.2em; color:var(--danger);
+  border:1px solid rgba(224,101,79,.4); padding:3px 9px; border-radius:100px;
+  background:rgba(224,101,79,.08);
+}
+/* city skyline bars */
+.skyline{ display:flex; align-items:flex-end; gap:5px; height:min(180px,22vh); margin-bottom:26px; justify-content:center; }
+.skyline span{
+  width:clamp(9px,1.6vw,18px); height:100%; border-radius:3px 3px 0 0;
+  background:linear-gradient(180deg,var(--gold-lit),rgba(216,178,95,.15));
+  transform-origin:50% 100%;
+  transform:scaleY(calc(.18 + var(--p,0) * var(--h,.6)));
+  transition:transform .1s linear;
+  box-shadow:0 0 22px -6px rgba(216,178,95,.7);
+}
+/* the seam between the halves */
+.seam{
+  position:absolute; left:50%; top:0; bottom:0; width:2px; z-index:5;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg,transparent,rgba(255,255,255,.5),transparent);
+}
+.seam__badge{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  padding:10px 18px; border-radius:100px; white-space:nowrap;
+  background:rgba(4,7,6,.85); border:1px solid var(--line-strong);
+  backdrop-filter:blur(10px);
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--danger);
+  box-shadow:0 18px 60px -20px rgba(0,0,0,.9);
+}
+.seam__bolt{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  width:min(280px,50vw); height:1px;
+  background:linear-gradient(90deg,transparent,var(--danger),transparent);
+  opacity:calc(var(--p,0) * .9);
+}
+
+/* gap bars readout below the scene */
+.gapbars{ display:grid; gap:22px; }
+.gapbar__top{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:10px; }
+.gapbar__track{ height:12px; border-radius:100px; background:rgba(255,255,255,.06); overflow:hidden; border:1px solid var(--line); }
+.gapbar__fill{
+  height:100%; width:0; border-radius:100px;
+  transition:width 1.6s var(--ease-out-expo);
+}
+.gapbar.in .gapbar__fill{ width:var(--w); }
+.gapbar--small .gapbar__fill{ background:linear-gradient(90deg,var(--emerald-700),var(--emerald-lit)); }
+.gapbar--big   .gapbar__fill{ background:linear-gradient(90deg,rgba(216,178,95,.5),var(--gold-lit)); }
+
+/* ---- 5b. BARRIER / INVOICE ---- */
+.barrier{ position:absolute; inset:0; display:grid; place-items:center; }
+.barrier__glow{
+  position:absolute; inset:0;
+  background:radial-gradient(60% 50% at 50% 40%,rgba(224,101,79,.16),transparent 70%);
+}
+.invoice{
+  position:relative; z-index:4;
+  width:min(560px,86vw);
+  background:linear-gradient(168deg,#F7F8F5,#E4E7E0);
+  color:#0D1310; border-radius:14px;
+  padding:clamp(22px,3.2vw,34px);
+  box-shadow:0 60px 120px -40px rgba(0,0,0,.9), 0 0 0 1px rgba(0,0,0,.2);
+  transform:
+    translateY(calc(-52vh + var(--p,0) * 46vh))
+    rotateX(calc(28deg - var(--p,0) * 28deg))
+    scale(calc(.8 + var(--p,0) * .2));
+  transform-origin:50% 0;
+  transition:transform .08s linear;
+}
+/* the shadow the invoice casts over the shop */
+.invoice__shadow{
+  position:absolute; left:50%; translate:-50% 0; z-index:3;
+  bottom:0; width:min(1100px,120vw); height:48vh;
+  background:radial-gradient(58% 100% at 50% 0%,rgba(0,0,0,.94),rgba(0,0,0,0) 72%);
+  opacity:calc(var(--p,0) * .95); pointer-events:none;
+  transition:opacity .1s linear;
+}
+.invoice::after{
+  content:""; position:absolute; left:0; right:0; bottom:-11px; height:12px;
+  background:repeating-linear-gradient(135deg,#E4E7E0 0 9px,transparent 9px 18px);
+  -webkit-mask:linear-gradient(#000,#000);
+}
+.invoice__head{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; border-bottom:1px dashed rgba(13,19,16,.25); padding-bottom:14px; }
+.invoice__title{ font-family:var(--mono); font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:#4B5A52; }
+.invoice__row{ display:flex; justify-content:space-between; gap:14px; padding:9px 0; font-size:.86rem; border-bottom:1px solid rgba(13,19,16,.08); }
+.invoice__row span:last-child{ font-family:var(--mono); }
+.invoice__total{ display:flex; justify-content:space-between; align-items:baseline; margin-top:16px; }
+.invoice__total b{ font-family:var(--mono); font-size:clamp(1.5rem,4vw,2.4rem); font-weight:600; letter-spacing:-.04em; }
+.stamp{
+  position:absolute; left:clamp(16px,5vw,54px); top:46%;
+  background:rgba(224,101,79,.08);
+  border:3px solid var(--danger); color:var(--danger);
+  font-family:var(--mono); font-weight:600; font-size:clamp(.8rem,2vw,1.1rem); letter-spacing:.16em;
+  padding:7px 14px; border-radius:6px; rotate:-13deg;
+  opacity:var(--stamp,0); scale:calc(.6 + var(--stamp,0) * .4);
+  transition:opacity .1s linear, scale .1s linear;
+}
+/* small shop being blocked */
+.shop{
+  position:absolute; bottom:clamp(104px,19vh,186px); left:50%; translate:-50% 0; z-index:2;
+  width:min(270px,60vw); text-align:center;
+  filter:saturate(calc(1 - var(--p,0) * .85)) brightness(calc(1 - var(--p,0) * .3));
+}
+.shop__awning{
+  height:22px; border-radius:6px 6px 0 0;
+  background:repeating-linear-gradient(90deg,var(--emerald) 0 14px,#F5FAF7 14px 28px);
+  box-shadow:0 8px 24px -12px rgba(0,230,118,.7);
+}
+.shop__body{
+  border:1px solid var(--line-strong); border-top:0; border-radius:0 0 8px 8px;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+  padding:16px 12px 18px;
+}
+.shop__door{ width:34%; height:44px; margin:8px auto 0; background:rgba(0,230,118,.18); border:1px solid rgba(0,230,118,.35); border-radius:4px 4px 0 0; }
+.shop__name{ font-family:var(--mono); font-size:.64rem; letter-spacing:.16em; color:var(--muted); text-transform:uppercase; }
+
+/* ---- 5c. THE BREAK (stadium → phone) ---- */
+.break{ position:absolute; inset:0; display:grid; place-items:center; perspective:1200px; }
+.break__bg{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(70% 60% at 50% 55%,rgba(0,230,118,calc(.05 + var(--p3,0) * .22)),transparent 70%),
+    linear-gradient(180deg,#040706,#03211A);
+  transition:background .1s linear;
+}
+/* the stadium that will break */
+.bigstadium{
+  position:absolute; width:min(720px,90vw); aspect-ratio:1/1;
+  transform:
+    rotateX(calc(58deg - var(--p1,0) * 14deg))
+    scale(calc(1 + var(--p1,0) * .26 + var(--p2,0) * .9));
+  opacity:calc(1 - var(--p2,0) * 1.15);
+  filter:blur(calc(var(--p2,0) * 14px)) saturate(calc(1 - var(--p2,0) * .7));
+  transition:transform .08s linear, opacity .08s linear, filter .08s linear;
+}
+.bigstadium > i{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  border-radius:50%;
+  border:1px solid rgba(0,230,118,.22);
+  box-shadow:inset 0 0 60px rgba(0,230,118,.12);
+}
+.bigstadium > i:nth-child(1){ width:100%; height:100%; }
+.bigstadium > i:nth-child(2){ width:84%; height:84%; border-color:rgba(0,230,118,.3); }
+.bigstadium > i:nth-child(3){ width:66%; height:66%; border-color:rgba(216,178,95,.28); }
+.bigstadium > i:nth-child(4){ width:48%; height:48%; border-color:rgba(0,230,118,.45); }
+.bigstadium__pitch{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  width:38%; height:40%; border-radius:50%;
+  background:
+    radial-gradient(closest-side,rgba(0,230,118,.40),rgba(0,230,118,.10)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 18px,transparent 18px 36px);
+  box-shadow:0 0 130px rgba(0,230,118,.45), inset 0 0 0 1px rgba(255,255,255,.2);
+}
+.bigstadium__wall{
+  position:absolute; left:50%; top:50%; translate:-50% -50%;
+  width:100%; height:100%; border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,
+    rgba(0,230,118,.18) 0 1.2deg, transparent 1.2deg 2.8deg);
+  -webkit-mask:radial-gradient(closest-side,transparent 42%,#000 44%);
+  mask:radial-gradient(closest-side,transparent 42%,#000 44%);
+}
+.bigstadium__lights{ position:absolute; inset:-4% -3%; }
+.bigstadium__lights i{
+  position:absolute; width:10px; height:10px; border-radius:50%;
+  background:var(--gold-lit); box-shadow:0 0 26px 8px rgba(244,216,155,.5);
+  border:0;
+}
+.bigstadium__lights i:nth-child(1){ left:12%; top:8%; }
+.bigstadium__lights i:nth-child(2){ right:12%; top:8%; }
+.bigstadium__lights i:nth-child(3){ left:12%; bottom:8%; }
+.bigstadium__lights i:nth-child(4){ right:12%; bottom:8%; }
+/* cracks */
+.cracks{
+  position:absolute; width:min(720px,90vw); aspect-ratio:1/1; overflow:visible;
+  transform:
+    rotateX(calc(58deg - var(--p1,0) * 14deg))
+    scale(calc(1 + var(--p1,0) * .26 + var(--p2,0) * .9));
+}
+.cracks path{
+  fill:none; stroke:url(#crackGrad); stroke-width:1.4; stroke-linecap:round;
+  stroke-dasharray:var(--len,300); stroke-dashoffset:calc(var(--len,300) * (1 - var(--pc,0)));
+  filter:drop-shadow(0 0 6px rgba(255,255,255,.7));
+  opacity:calc(1 - var(--p2,0) * 1.4);
+}
+/* shockwave */
+.shock{
+  position:absolute; width:min(720px,90vw); aspect-ratio:1/1; border-radius:50%;
+  border:1px solid rgba(255,255,255,.5);
+  transform:rotateX(calc(58deg - var(--p1,0) * 14deg)) scale(calc(.2 + var(--p2,0) * 2.4));
+  opacity:calc((1 - var(--p2,0)) * var(--p2,0) * 2.4);
+  transition:transform .08s linear, opacity .08s linear;
+}
+.shards{ position:absolute; inset:0; pointer-events:none; }
+.shard{
+  position:absolute; left:50%; top:50%;
+  width:var(--w); height:var(--h);
+  background:linear-gradient(var(--a), rgba(255,255,255,.9), rgba(0,230,118,.65) 45%, rgba(216,178,95,.4));
+  box-shadow:0 0 24px rgba(0,230,118,.45);
+  clip-path:polygon(0 0,100% 22%,72% 100%,8% 74%);
+  transform:
+    translate3d(
+      calc(-50% + var(--x) * var(--p2,0) * 1px),
+      calc(-50% + var(--y) * var(--p2,0) * 1px), 0)
+    rotate(calc(var(--r) * var(--p2,0) * 1deg))
+    scale(calc(1 - var(--p2,0) * .35));
+  opacity:calc(var(--p2,0) * 1.6 * (1 - var(--p2,0)) * 2);
+  filter:blur(calc(var(--p2,0) * 2px));
+  transition:transform .08s linear, opacity .08s linear;
+}
+/* the phone */
+.phone{
+  position:relative; z-index:6;
+  width:min(310px,72vw); aspect-ratio:9/19.2;
+  border-radius:42px; padding:11px;
+  background:linear-gradient(160deg,#3A4B44,#0C1311 42%,#2A3833);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.22),
+    inset 0 0 0 1px rgba(0,230,118,.18),
+    0 46px 110px -30px rgba(0,0,0,.95),
+    0 0 calc(var(--p3,0) * 130px) rgba(0,230,118,calc(var(--p3,0) * .55));
+  transform:
+    translateY(calc((1 - var(--p3,0)) * 90px))
+    scale(calc(.62 + var(--p3,0) * .38))
+    rotateX(calc((1 - var(--p3,0)) * 12deg));
+  opacity:var(--p3,0);
+  transition:transform .08s linear, opacity .08s linear, box-shadow .08s linear;
+}
+.phone__notch{
+  position:absolute; left:50%; top:11px; translate:-50% 0; z-index:4;
+  width:32%; height:20px; border-radius:0 0 14px 14px; background:#0A0F0D;
+}
+.phone__screen{
+  position:relative; height:100%; border-radius:32px; overflow:hidden;
+  background:linear-gradient(175deg,#061710,#040706 55%,#071A13);
+  padding:26px 14px 14px;
+  display:flex; flex-direction:column; gap:9px;
+}
+.phone__screen::before{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(80% 40% at 50% 0%,rgba(0,230,118,.22),transparent 70%);
+}
+.ui{ position:relative; z-index:2; }
+.ui-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.ui-brand{ font-size:.62rem; font-family:var(--mono); letter-spacing:.2em; color:var(--emerald-lit); }
+.ui-chip{
+  font-family:var(--mono); font-size:.5rem; letter-spacing:.12em; padding:3px 7px; border-radius:100px;
+  border:1px solid rgba(216,178,95,.4); color:var(--gold-lit);
+}
+.ui-card{
+  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.025));
+  border:1px solid var(--line); border-radius:12px; padding:9px 10px;
+}
+.ui-title{ display:block; font-size:.66rem; font-weight:600; letter-spacing:-.01em; }
+.ui-sub{ display:block; font-size:.52rem; color:var(--muted-dim); font-family:var(--mono); letter-spacing:.06em; }
+.ui-row .ui-sub{ display:inline; }
+.ui-meter{ display:block; height:5px; border-radius:100px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:7px; }
+.ui-meter i{ display:block; height:100%; width:68%; border-radius:100px; background:linear-gradient(90deg,var(--emerald-700),var(--emerald-lit)); }
+.ui-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.ui-tile{ border:1px solid var(--line); border-radius:10px; padding:7px 8px; background:rgba(255,255,255,.03); }
+.ui-tile b{ display:block; font-family:var(--mono); font-size:.72rem; color:var(--emerald-lit); }
+.ui-tile span{ display:block; font-size:.46rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-dim); font-family:var(--mono); }
+.ui-opts{ display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:8px; }
+.ui-opt{
+  font-size:.55rem; text-align:center; padding:6px 4px; border-radius:8px;
+  border:1px solid var(--line); color:var(--muted);
+}
+.ui-opt.sel{ border-color:rgba(0,230,118,.6); background:rgba(0,230,118,.14); color:var(--emerald-lit); }
+.ui-lb{ display:flex; align-items:center; gap:7px; padding:5px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+.ui-lb b{ font-family:var(--mono); font-size:.55rem; color:var(--gold-lit); width:16px; }
+.ui-lb span{ font-size:.58rem; flex:1; }
+.ui-lb em{ font-family:var(--mono); font-size:.52rem; color:var(--emerald-lit); font-style:normal; }
+.ui-coupon{
+  border:1px dashed rgba(216,178,95,.45); border-radius:10px; padding:8px 10px;
+  background:linear-gradient(100deg,rgba(216,178,95,.14),transparent);
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+}
+.ui-coupon strong{ font-size:.58rem; }
+.ui-coupon i{ font-family:var(--mono); font-style:normal; font-size:.55rem; color:var(--gold-lit); }
+.ui-anim{ opacity:0; transform:translateY(10px); transition:opacity .5s var(--ease), transform .5s var(--ease); }
+.phone.lit .ui-anim{ opacity:1; transform:none; }
+.phone.lit .ui-anim:nth-child(2){ transition-delay:.07s }
+.phone.lit .ui-anim:nth-child(3){ transition-delay:.14s }
+.phone.lit .ui-anim:nth-child(4){ transition-delay:.21s }
+.phone.lit .ui-anim:nth-child(5){ transition-delay:.28s }
+.phone.lit .ui-anim:nth-child(6){ transition-delay:.35s }
+.phone.lit .ui-anim:nth-child(7){ transition-delay:.42s }
+.phone.lit .ui-anim:nth-child(8){ transition-delay:.49s }
+
+/* ============================================================
+   6. SPLIT CONTENT BLOCKS
+   ============================================================ */
+.grid-2{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:clamp(24px,4vw,64px); align-items:center; }
+.grid-3{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:clamp(18px,2.4vw,26px); }
+.head-block{ max-width:74ch; }
+.head-block .h1{ margin-block:18px 22px; }
+
+.figure{
+  position:relative; border-radius:var(--radius); overflow:hidden; border:1px solid var(--line);
+  background:linear-gradient(150deg,var(--emerald-950),var(--panel));
+  aspect-ratio:4/3;
+}
+/* CSS-drawn fallback so the frame is never empty if the photo fails to load */
+.figure::before{
+  content:""; position:absolute; inset:0;
+  background:
+    repeating-conic-gradient(from 0deg at 50% 118%,rgba(0,230,118,.16) 0 .8deg,transparent .8deg 2deg),
+    radial-gradient(60% 42% at 50% 112%,rgba(0,230,118,.45),transparent 70%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 22px,transparent 22px 44px);
+  opacity:.55;
+}
+/* when the photo actually loads, drop the drawn art back to a texture */
+.figure:has(img)::before{ opacity:.22; }
+.figure img{ position:relative; z-index:1; width:100%; height:100%; object-fit:cover; opacity:.62; mix-blend-mode:luminosity; }
+.figure::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg,transparent 30%,rgba(4,7,6,.85)),
+             radial-gradient(70% 60% at 30% 20%,rgba(0,230,118,.22),transparent 70%);
+}
+.figure__cap{
+  position:absolute; left:0; right:0; bottom:0; z-index:2; padding:20px;
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+}
+
+/* market economy chips */
+.market{ display:flex; flex-wrap:wrap; gap:10px; }
+.market span{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 15px; border-radius:100px; border:1px solid var(--line);
+  background:rgba(216,178,95,.06); font-size:.85rem; color:var(--white);
+}
+.market span::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--gold); }
+
+/* SME "too expensive" list */
+.blocked{ display:grid; gap:12px; }
+.blocked li{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:16px 18px; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:linear-gradient(100deg,rgba(224,101,79,.07),transparent);
+  transition:transform .5s var(--ease), border-color .5s var(--ease);
+}
+.blocked li:hover{ transform:translateX(6px); border-color:rgba(224,101,79,.4); }
+.blocked li b{ font-weight:500; }
+.blocked li em{ font-family:var(--mono); font-style:normal; font-size:.82rem; color:var(--danger); }
+
+/* ============================================================
+   7. PLATFORM (tripartite)
+   ============================================================ */
+.tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:34px; }
+.tab{
+  padding:11px 20px; border-radius:100px; border:1px solid var(--line);
+  font-size:.86rem; color:var(--muted); transition:all .4s var(--ease);
+}
+.tab[aria-selected="true"]{ color:#03150D; background:var(--emerald-lit); border-color:transparent; font-weight:600; }
+
+.pcard{
+  position:relative; padding:clamp(24px,2.6vw,34px); display:flex; flex-direction:column; gap:18px;
+  transition:transform .6s var(--ease), border-color .6s var(--ease), box-shadow .6s var(--ease);
+  min-height:100%;
+}
+.pcard:hover{ transform:translateY(-8px); border-color:rgba(0,230,118,.35); box-shadow:0 40px 80px -40px rgba(0,230,118,.35); }
+.pcard__glow{
+  position:absolute; inset:-40% 30% 60% -30%; pointer-events:none; opacity:0;
+  background:radial-gradient(closest-side,rgba(0,230,118,.28),transparent);
+  transition:opacity .6s var(--ease);
+}
+.pcard:hover .pcard__glow{ opacity:1; }
+.pcard__i{
+  width:46px; height:46px; border-radius:14px; display:grid; place-items:center;
+  background:linear-gradient(150deg,rgba(0,230,118,.22),rgba(216,178,95,.1));
+  border:1px solid var(--line-strong);
+}
+.pcard__i svg{ width:22px; height:22px; stroke:var(--emerald-lit); fill:none; stroke-width:1.6; }
+.pcard--gold .pcard__i svg{ stroke:var(--gold-lit); }
+.pcard ul{ display:grid; gap:11px; padding-top:2px; }
+.pcard li{ display:flex; gap:11px; font-size:.9rem; color:var(--muted); line-height:1.55; }
+.pcard li::before{
+  content:""; flex:none; width:16px; height:16px; margin-top:3px; border-radius:5px;
+  background:rgba(0,230,118,.14); border:1px solid rgba(0,230,118,.4);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300E676' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-size:11px; background-repeat:no-repeat; background-position:center;
+}
+.badge-row{ display:flex; flex-wrap:wrap; gap:8px; }
+.badge{
+  font-family:var(--mono); font-size:.64rem; letter-spacing:.14em; text-transform:uppercase;
+  padding:6px 11px; border-radius:100px; border:1px solid var(--line); color:var(--muted);
+}
+.badge.is-em{ color:var(--emerald-lit); border-color:rgba(0,230,118,.35); background:rgba(0,230,118,.07); }
+.badge.is-gold{ color:var(--gold-lit); border-color:rgba(216,178,95,.35); background:rgba(216,178,95,.07); }
+
+/* tiers */
+.tierband{
+  margin-top:clamp(20px,3vw,28px); padding:clamp(24px,3vw,38px);
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:linear-gradient(150deg,rgba(216,178,95,.07),rgba(255,255,255,.02));
+}
+.tierband__head{
+  display:flex; flex-wrap:wrap; gap:18px 32px; align-items:end; justify-content:space-between;
+  margin-bottom:26px;
+}
+.tiers{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
+.tier{
+  padding:20px; border-radius:var(--radius-sm); border:1px solid var(--line);
+  background:linear-gradient(165deg,rgba(255,255,255,.05),transparent);
+  transition:all .5s var(--ease);
+}
+.tier:hover{ border-color:rgba(216,178,95,.45); transform:translateY(-5px); }
+.tier__n{ font-family:var(--mono); font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); }
+.tier__p{ font-size:1.5rem; margin-block:8px 4px; }
+.tier__p small{ font-size:.72rem; color:var(--muted-dim); font-family:var(--mono); letter-spacing:.04em; }
+.tier__d{ font-size:.84rem; color:var(--muted); }
+.tier--feat{ border-color:rgba(0,230,118,.4); background:linear-gradient(165deg,rgba(0,230,118,.1),transparent); }
+
+/* revenue donut */
+.revshare{ display:flex; align-items:center; gap:clamp(20px,3vw,38px); flex-wrap:wrap; }
+.donut{
+  --v:0;
+  position:relative; width:clamp(150px,17vw,196px); aspect-ratio:1; border-radius:50%;
+  background:conic-gradient(var(--emerald-lit) calc(var(--v) * 1%), rgba(255,255,255,.07) 0);
+  display:grid; place-items:center;
+  box-shadow:0 0 60px -20px rgba(0,230,118,.6);
+  transition:background .1s linear;
+}
+.donut::after{
+  content:""; position:absolute; inset:16%; border-radius:50%;
+  background:var(--ink); border:1px solid var(--line);
+}
+.donut__v{ position:relative; z-index:2; font-size:1.9rem; }
+.donut__v small{ font-size:.86rem; }
+.rev-legend{ display:grid; gap:12px; }
+.rev-legend div{ display:flex; align-items:center; gap:10px; font-size:.9rem; color:var(--muted); }
+.rev-legend i{ width:11px; height:11px; border-radius:4px; flex:none; }
+
+/* ============================================================
+   8. PILOT / TIMELINE / CTA
+   ============================================================ */
+.timeline{ position:relative; display:grid; gap:22px; }
+.timeline::before{
+  content:""; position:absolute; left:19px; top:12px; bottom:12px; width:1px;
+  background:linear-gradient(180deg,var(--emerald-lit),rgba(216,178,95,.6),transparent);
+}
+.tl{ position:relative; display:grid; grid-template-columns:40px 1fr; gap:20px; align-items:start; }
+.tl__dot{
+  width:40px; height:40px; border-radius:50%; display:grid; place-items:center;
+  background:var(--ink); border:1px solid rgba(0,230,118,.45);
+  font-family:var(--mono); font-size:.7rem; color:var(--emerald-lit);
+  box-shadow:0 0 0 6px rgba(4,7,6,1);
+}
+.tl--next .tl__dot{ border-color:rgba(216,178,95,.5); color:var(--gold-lit); }
+.tl__body{ padding-bottom:6px; }
+.tl__meta{ font-family:var(--mono); font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--muted-dim); }
+
+.compliance{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+.comp{
+  padding:20px; border-radius:var(--radius-sm); border:1px solid var(--line);
+  background:linear-gradient(165deg,rgba(255,255,255,.045),transparent);
+  transition:all .5s var(--ease);
+}
+.comp:hover{ border-color:var(--line-strong); background:linear-gradient(165deg,rgba(255,255,255,.08),transparent); }
+.comp b{ display:block; font-weight:600; font-size:.95rem; margin-bottom:6px; }
+.comp span{ font-size:.82rem; color:var(--muted); }
+
+.cta{
+  position:relative; overflow:hidden; border-radius:28px; padding:clamp(38px,6vw,84px);
+  text-align:center;
+  background:
+    radial-gradient(80% 120% at 50% 0%,rgba(0,230,118,.22),transparent 62%),
+    linear-gradient(160deg,var(--emerald-950),var(--ink));
+  border:1px solid var(--line);
+}
+.cta__ring{
+  position:absolute; left:50%; top:0; translate:-50% -50%;
+  width:min(760px,120vw); aspect-ratio:1; border-radius:50%;
+  border:1px solid rgba(0,230,118,.16); pointer-events:none;
+}
+.cta__ring:nth-of-type(2){ width:min(1080px,160vw); border-color:rgba(216,178,95,.12); }
+.cta__actions{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:30px; }
+
+.footer{ border-top:1px solid var(--line); padding-block:44px 60px; margin-top:clamp(60px,10vh,120px); }
+.footer__grid{ display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap; align-items:center; }
+.footer__links{ display:flex; gap:26px; flex-wrap:wrap; }
+.footer__links a{ font-size:.85rem; color:var(--muted); transition:color .35s var(--ease); }
+.footer__links a:hover{ color:var(--emerald-lit); }
+
+/* pointer spotlight (desktop only) */
+.spotlight{
+  position:fixed; z-index:1; pointer-events:none; width:620px; height:620px; border-radius:50%;
+  transform:translate3d(calc(var(--mx,50vw) - 310px),calc(var(--my,50vh) - 310px),0);
+  background:radial-gradient(closest-side,rgba(0,230,118,.07),transparent);
+  transition:opacity .6s var(--ease);
+}
+
+/* ============================================================
+   9. RESPONSIVE
+   ============================================================ */
+@media (max-width:960px){
+  .nav__links{ display:none; }
+  .rail{ display:none; }
+  .hero__grid{ grid-template-columns:1fr; }
+  .hero__aside{ padding-bottom:0; }
+  .scene--disconnect{ height:260vh; }
+  .scene--barrier{ height:250vh; }
+  .scene--break{ height:340vh; }
+  .split{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; }
+  .seam{ left:0; right:0; top:50%; bottom:auto; width:auto; height:2px; transform:translateY(-50%);
+         background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); }
+  .split__num{ font-size:clamp(2.2rem,11vw,3.4rem); }
+  .mini-stadium{ width:min(200px,44vw); margin-bottom:22px; }
+  .skyline{ height:14vh; margin-bottom:14px; }
+  .spotlight{ display:none; }
+}
+/* captions would collide with the stacked scene content on small screens */
+@media (max-width:960px){
+  .scene__caption{ display:none; }
+  .split__content{ padding-block:8px; }
+}
+@media (max-width:640px){
+  :root{ --nav-h:64px; }
+  .display{ font-size:clamp(2.5rem,10.5vw,3.4rem); }
+  .hero{ padding-top:calc(var(--nav-h) + 22px); }
+  .hero__top{ margin-bottom:22px; gap:10px; }
+  .hero__stats{ grid-template-columns:1fr; margin-top:26px; }
+  .stat{ display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding:13px 2px; }
+  .stat__n{ font-size:1.4rem; }
+  .stat__l{ margin-top:0; font-size:.66rem; }
+  .pill{ font-size:.62rem; padding:7px 12px; }
+  .cta{ border-radius:20px; }
+  .scrollcue{ display:none; }
+  .brand__ar{ display:none; }
+  .cta-long{ display:none; }
+  .cta-short{ display:inline; }
+  .nav__cta{ padding:11px 18px; font-size:.86rem; }
+  .tierband__head{ margin-bottom:20px; }
+}
+
+/* ============================================================
+   10. REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  [data-reveal]{ opacity:1 !important; transform:none !important; clip-path:none !important; }
+  .words .word > span{ transform:none !important; }
+  .beam,.hero__crowd{ animation:none; }
+}
+</style>
+</head>
+
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="spotlight" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"></div>
+
+<!-- ============================= NAV ============================= -->
+<header class="nav" id="nav">
+  <div class="container nav__inner">
+    <a href="#hero" class="brand" aria-label="Fanhour home">
+      <span class="brand__mark" aria-hidden="true"><span>FH</span></span>
+      <span class="brand__name">Fanhour<span class="brand__ar" lang="ar" dir="rtl">فان أور</span></span>
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#disconnect">The Gap</a>
+      <a href="#barrier">The Barrier</a>
+      <a href="#solution">The Break</a>
+      <a href="#platform">Platform</a>
+      <a href="#pilot">Pilot</a>
+    </nav>
+    <a href="#cta" class="btn nav__cta">
+      <span class="cta-long">Join the revolution</span><span class="cta-short">Join</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- section rail -->
+<nav class="rail" id="rail" aria-label="Scroll indicator">
+  <button data-go="hero" data-label="Scale" class="on" aria-label="Hero"></button>
+  <button data-go="disconnect" data-label="The Gap" aria-label="The Gap"></button>
+  <button data-go="barrier" data-label="Barrier" aria-label="The Barrier"></button>
+  <button data-go="solution" data-label="The Break" aria-label="The Break"></button>
+  <button data-go="platform" data-label="Platform" aria-label="Platform"></button>
+  <button data-go="pilot" data-label="Pilot" aria-label="Pilot"></button>
+</nav>
+
+<main>
+
+<!-- ============================= 1. HERO ============================= -->
+<section class="hero" id="hero">
+  <div class="hero__sky" aria-hidden="true"></div>
+  <div class="beam beam--l" aria-hidden="true" data-parallax="-0.06"></div>
+  <div class="beam beam--r" aria-hidden="true" data-parallax="-0.06"></div>
+  <div class="hero__bowl" aria-hidden="true" data-parallax="0.16">
+    <div class="bowl__ring"></div>
+    <div class="bowl__ring"></div>
+    <div class="bowl__ring"></div>
+    <span class="bowl__seats"></span>
+    <span class="bowl__pitch"></span>
+    <span class="bowl__pylon"></span><span class="bowl__pylon"></span>
+    <span class="bowl__pylon"></span><span class="bowl__pylon"></span>
+  </div>
+  <div class="hero__crowd" aria-hidden="true" data-parallax="0.09"></div>
+  <div class="hero__vig" aria-hidden="true"></div>
+
+  <div class="container hero__inner">
+    <div class="hero__top">
+      <span class="pill"><i class="dot-live" aria-hidden="true"></i> Saudi Sports-Tech</span>
+      <span class="pill">Fan Engagement · SME Sponsorship</span>
+    </div>
+
+    <div class="hero__grid">
+      <div>
+        <h1 class="display words" id="heroTitle">
+          <span class="word"><span>Modern</span></span> <span class="word"><span>football</span></span>
+          <span class="word"><span>runs</span></span> <span class="word"><span>on</span></span>
+          <span class="word"><span class="grad-em">scale.</span></span>
+        </h1>
+      </div>
+
+      <aside class="hero__aside stack" data-reveal="up" style="--d:520ms">
+        <p class="lead">
+          Colossal sponsorships. Cathedral stadiums. Broadcast money that reshapes cities.
+        </p>
+        <p class="body">
+          But step outside the great arenas of Riyadh and Jeddah — into the regional cities where the
+          Kingdom's football culture actually lives — and the picture changes completely.
+        </p>
+        <a href="#disconnect" class="btn-ghost">
+          See what changes
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+        </a>
+      </aside>
+    </div>
+
+    <div class="hero__stats" data-reveal="up" style="--d:700ms">
+      <div class="stat">
+        <span class="stat__n num grad-em" data-count="5000" data-format="comma">0</span>
+        <span class="stat__l">Regional seats, maximum</span>
+      </div>
+      <div class="stat">
+        <span class="stat__n num grad-gold" data-count="3.2" data-decimals="1" data-prefix="SAR " data-suffix="B">0</span>
+        <span class="stat__l">Local economy nearby</span>
+      </div>
+      <div class="stat">
+        <span class="stat__n num" data-count="5000" data-prefix="SAR " data-format="comma">0</span>
+        <span class="stat__l">New sponsorship entry point</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrollcue" aria-hidden="true">
+    <span>Scroll</span>
+    <span class="scrollcue__line"></span>
+  </div>
+</section>
+
+<!-- ============================= 2. THE REGIONAL DISCONNECT ============================= -->
+<section class="scene scene--disconnect" id="disconnect" data-scene>
+  <div class="scene__stage">
+    <div class="split">
+      <div class="split__half split__half--stadium">
+        <div class="split__content">
+          <div class="mini-stadium" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="split__label">Inside the walls</span>
+          <span class="split__num num grad-em" data-scene-count="5000" data-format="comma">0</span>
+          <p class="split__sub">Seats at a typical regional club. "Sold out" is not a celebration — it is a ceiling on matchday revenue.</p>
+        </div>
+      </div>
+      <div class="split__half split__half--city">
+        <div class="split__content">
+          <div class="skyline" aria-hidden="true" id="skyline"></div>
+          <span class="split__label">Outside the walls</span>
+          <span class="split__num num grad-gold" data-scene-count="3.2" data-decimals="1" data-prefix="SAR " data-suffix="B">0</span>
+          <p class="split__sub">Dates in Qassim. Honey and tourism in Asir. Regional commerce compounding, minute by minute.</p>
+        </div>
+      </div>
+      <div class="seam" aria-hidden="true">
+        <span class="seam__bolt"></span>
+        <span class="seam__badge">The Disconnect</span>
+      </div>
+    </div>
+
+    <div class="scene__caption">
+      <div class="cap" data-cap="0"><p class="lead" style="max-width:46ch">A hard physical ceiling — 3,000 to 5,000 seats.</p></div>
+      <div class="cap" data-cap="1"><p class="lead" style="max-width:46ch">Meanwhile, regional commerce generates billions of Riyals.</p></div>
+      <div class="cap" data-cap="2"><p class="lead" style="max-width:52ch">A 5,000-person matchday footprint, beside a 3.2 billion Riyal local economy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container grid-2">
+    <div class="head-block" data-reveal="up">
+      <span class="eyebrow">01 — The Regional Disconnect</span>
+      <h2 class="h1">The stadium has a ceiling.<br><span class="grad-gold">The economy does not.</span></h2>
+      <p class="body">
+        Regional clubs face a hard physical limit. Stadiums often max out between 3,000 and 5,000 seats,
+        so every commercial model built on matchday attendance inherits that same ceiling. Sell every
+        ticket, every match, all season — the revenue line still flattens.
+      </p>
+      <p class="body" style="margin-top:16px">
+        Yet right outside the stadium walls, regional commerce is booming. Markets like Qassim and Asir
+        move billions of Riyals a year through thousands of businesses whose customers are, quite literally,
+        the same people in the stands.
+      </p>
+      <div class="market" style="margin-top:26px" data-reveal="up" data-stagger>
+        <span>Qassim · Dates</span>
+        <span>Asir · Honey</span>
+        <span>Asir · Tourism</span>
+        <span>Retail &amp; Clinics</span>
+      </div>
+    </div>
+
+    <div class="stack-lg">
+      <div class="figure" data-reveal="zoom">
+        <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1200&q=70"
+             alt="A floodlit football pitch at night" loading="lazy" onerror="this.remove()">
+        <span class="figure__cap">Regional matchday · capacity-bound</span>
+      </div>
+
+      <div class="card gapbars" style="padding:26px" data-reveal="up">
+        <div class="gapbar gapbar--small" data-bar>
+          <div class="gapbar__top">
+            <span class="tiny" style="letter-spacing:.14em;text-transform:uppercase;font-family:var(--mono)">Matchday footprint</span>
+            <span class="num grad-em">5,000 people</span>
+          </div>
+          <div class="gapbar__track"><div class="gapbar__fill" style="--w:6%"></div></div>
+        </div>
+        <div class="gapbar gapbar--big" data-bar>
+          <div class="gapbar__top">
+            <span class="tiny" style="letter-spacing:.14em;text-transform:uppercase;font-family:var(--mono)">Local economy</span>
+            <span class="num grad-gold">SAR 3.2 Billion</span>
+          </div>
+          <div class="gapbar__track"><div class="gapbar__fill" style="--w:100%"></div></div>
+        </div>
+        <p class="tiny" style="margin-top:4px">Scale is illustrative — the ratio is the point.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= 3. THE BARRIER TO ENTRY ============================= -->
+<section class="scene scene--barrier" id="barrier" data-scene>
+  <div class="scene__stage">
+    <div class="barrier">
+      <div class="barrier__glow" aria-hidden="true"></div>
+
+      <div class="shop" aria-hidden="true">
+        <div class="shop__awning"></div>
+        <div class="shop__body">
+          <span class="shop__name">Local SME</span>
+          <div class="shop__door"></div>
+        </div>
+      </div>
+
+      <div class="invoice__shadow" aria-hidden="true"></div>
+
+      <article class="invoice" aria-label="Traditional sponsorship invoice">
+        <header class="invoice__head">
+          <div>
+            <span class="invoice__title">Sponsorship Proposal</span>
+            <h3 class="h3" style="color:#0D1310;margin-top:6px">Perimeter Board Package</h3>
+          </div>
+          <span class="invoice__title">Season<br>2025 / 26</span>
+        </header>
+        <div style="padding-top:10px">
+          <div class="invoice__row"><span>LED perimeter boards — full season</span><span>380,000</span></div>
+          <div class="invoice__row"><span>Match programme &amp; static signage</span><span>68,000</span></div>
+          <div class="invoice__row"><span>Production &amp; installation</span><span>52,000</span></div>
+        </div>
+        <div class="invoice__total">
+          <span class="invoice__title">Total due (SAR)</span>
+          <b>500,000</b>
+        </div>
+        <span class="stamp">OUT OF REACH</span>
+      </article>
+    </div>
+
+    <div class="scene__caption">
+      <div class="cap" data-cap="0"><p class="lead" style="max-width:46ch">Local businesses want in.</p></div>
+      <div class="cap" data-cap="1"><p class="lead" style="max-width:48ch">Then the invoice arrives.</p></div>
+      <div class="cap" data-cap="2"><p class="lead" style="max-width:52ch">Hundreds of thousands of Riyals — for a logo on a wall.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container grid-2">
+    <div class="stack-lg" style="order:2">
+      <ul class="blocked" data-reveal="up" data-stagger>
+        <li><b>Neighbourhood clinic</b><em>SAR 500,000 · declined</em></li>
+        <li><b>Family pharmacy chain</b><em>SAR 350,000 · declined</em></li>
+        <li><b>Speciality coffee roaster</b><em>SAR 240,000 · declined</em></li>
+        <li><b>Local retail group</b><em>SAR 500,000 · declined</em></li>
+      </ul>
+      <div class="card" style="padding:26px" data-reveal="up">
+        <p class="body" style="color:var(--white)">
+          So the marketing budget leaves town. It goes to national ad platforms with no stake in the club,
+          no stake in the city, and no relationship with the supporter standing in the shop.
+        </p>
+        <p class="tiny" style="margin-top:12px">Capital out. Loyalty unmonetised. Club and local economy drift apart.</p>
+      </div>
+    </div>
+
+    <div class="head-block" data-reveal="up">
+      <span class="eyebrow">02 — The Barrier to Entry</span>
+      <h2 class="h1">Sponsorship priced<br>for <span class="grad-gold">everyone but them.</span></h2>
+      <p class="body">
+        Local SMEs — clinics, pharmacies, cafés, retailers — drive this regional wealth, and they genuinely
+        want to support their clubs. It is their city, their team, their customers in the stands.
+      </p>
+      <p class="body" style="margin-top:16px">
+        But traditional sports sponsorship was designed for national brands. A perimeter board package can
+        run to hundreds of thousands of Riyals. That single number decides who gets to belong — and it
+        forces capital out of the community and into national ad platforms, quietly disconnecting the club
+        from the economy that surrounds it.
+      </p>
+      <div class="badge-row" style="margin-top:26px">
+        <span class="badge">Perimeter boards</span>
+        <span class="badge">Minimum season commitment</span>
+        <span class="badge">No measurable ROI</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= 4. BREAKING THE WALLS ============================= -->
+<section class="scene scene--break" id="solution" data-scene>
+  <div class="scene__stage">
+    <div class="break">
+      <div class="break__bg" aria-hidden="true"></div>
+
+      <div class="bigstadium" aria-hidden="true">
+        <i></i><i></i><i></i><i></i>
+        <span class="bigstadium__wall"></span>
+        <span class="bigstadium__pitch"></span>
+        <span class="bigstadium__lights"><i></i><i></i><i></i><i></i></span>
+      </div>
+
+      <svg class="cracks" viewBox="0 0 620 400" aria-hidden="true" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="crackGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="55%" stop-color="#00E676"/>
+            <stop offset="100%" stop-color="#F4D89B"/>
+          </linearGradient>
+        </defs>
+        <g transform="translate(310 200) scale(1.04) translate(-310 -200)">
+        <path d="M310 200 L248 148 L186 92 L118 26"/>
+        <path d="M310 200 L374 146 L442 96 L512 34"/>
+        <path d="M310 200 L250 256 L182 310 L106 372"/>
+        <path d="M310 200 L372 254 L444 304 L518 366"/>
+        <path d="M310 200 L306 112 L298 14"/>
+        <path d="M310 200 L318 296 L328 392"/>
+        <path d="M310 200 L204 192 L92 180"/>
+        <path d="M310 200 L418 208 L534 220"/>
+        <path d="M248 148 L214 178 L170 190"/>
+        <path d="M374 146 L412 176 L458 188"/>
+        <path d="M250 256 L212 240 L168 244"/>
+        <path d="M372 254 L414 236 L462 240"/>
+        <path d="M186 92 L162 62"/>
+        <path d="M442 96 L470 66"/>
+        <path d="M182 310 L154 340"/>
+        <path d="M444 304 L474 336"/>
+        </g>
+      </svg>
+
+      <span class="shock" aria-hidden="true"></span>
+      <div class="shards" id="shards" aria-hidden="true"></div>
+
+      <div class="phone" id="phone" role="img" aria-label="The Fanhour app: prediction challenge, leaderboard and sponsor coupon">
+        <span class="phone__notch" aria-hidden="true"></span>
+        <div class="phone__screen">
+          <div class="ui ui-row ui-anim">
+            <span class="ui-brand">FANHOUR</span>
+            <span class="ui-chip">AL-HAZEM FC</span>
+          </div>
+          <div class="ui ui-card ui-anim">
+            <span class="ui-title">Week 12 · Prediction Challenge</span>
+            <span class="ui-sub">SKILL-BASED · FREE ENTRY</span>
+            <div class="ui-opts">
+              <span class="ui-opt sel">Home win</span>
+              <span class="ui-opt">Draw</span>
+              <span class="ui-opt">Away win</span>
+              <span class="ui-opt">First scorer</span>
+            </div>
+          </div>
+          <div class="ui ui-card ui-anim">
+            <span class="ui-title">Club Leaderboard</span>
+            <div class="ui-lb"><b>01</b><span>Faisal A.</span><em>2,480</em></div>
+            <div class="ui-lb"><b>02</b><span>Noura K.</span><em>2,310</em></div>
+            <div class="ui-lb" style="border:0"><b>03</b><span>Abdullah M.</span><em>2,145</em></div>
+          </div>
+          <div class="ui ui-card ui-anim">
+            <span class="ui-title">Season progress</span>
+            <span class="ui-sub">12 OF 30 CHALLENGES PLAYED</span>
+            <span class="ui-meter"><i></i></span>
+          </div>
+          <div class="ui ui-tiles ui-anim">
+            <div class="ui-tile"><b>1,842</b><span>Fans playing</span></div>
+            <div class="ui-tile"><b>27</b><span>Local sponsors</span></div>
+          </div>
+          <div class="ui ui-coupon ui-anim">
+            <strong>Qassim Dates Co.</strong>
+            <i>-20% · REDEEM</i>
+          </div>
+          <div class="ui ui-row ui-anim" style="margin-top:auto">
+            <span class="ui-sub">SPONSOR-FUNDED REWARDS</span>
+            <span class="ui-sub" style="color:var(--emerald-lit)">LIVE</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene__caption">
+      <div class="cap" data-cap="0"><p class="lead" style="max-width:44ch">The walls are the ceiling.</p></div>
+      <div class="cap" data-cap="1"><p class="lead" style="max-width:44ch">So we break them.</p></div>
+      <div class="cap" data-cap="2"><p class="lead" style="max-width:52ch">Fan loyalty moves from the stand to the screen — and the ceiling disappears.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="head-block" data-reveal="up" style="margin-inline:auto;text-align:center">
+      <span class="eyebrow is-emerald">03 — Breaking the Walls</span>
+      <h2 class="h1" style="margin-inline:auto">Fanhour transfers the club's<br><span class="grad-em">most valuable asset</span> to the phone.</h2>
+      <p class="lead" style="margin-inline:auto">
+        Fan loyalty was always the real inventory — it was just trapped inside a 5,000-seat building for
+        ninety minutes a fortnight. We move it to the device every supporter already carries, then take the
+        massive, exclusionary sponsorship package and slice it into affordable digital tiers.
+      </p>
+    </div>
+
+    <div class="grid-3" style="margin-top:clamp(38px,6vh,66px)">
+      <article class="card pcard" data-reveal="up" style="--d:0ms">
+        <span class="pcard__glow" aria-hidden="true"></span>
+        <div class="pcard__i" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        </div>
+        <h3 class="h3">No physical ceiling</h3>
+        <p class="body" style="font-size:.94rem">
+          Reach is no longer bounded by seats. Every supporter in the region — and every one who moved away —
+          is reachable, every week of the season.
+        </p>
+      </article>
+      <article class="card pcard" data-reveal="up" style="--d:110ms">
+        <span class="pcard__glow" aria-hidden="true"></span>
+        <div class="pcard__i" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+        </div>
+        <h3 class="h3">Sliced, not shrunk</h3>
+        <p class="body" style="font-size:.94rem">
+          One SAR 500,000 package becomes dozens of digital tiers from SAR 5,000/month — the same club
+          audience, priced for the businesses that live beside it.
+        </p>
+      </article>
+      <article class="card pcard pcard--gold" data-reveal="up" style="--d:220ms">
+        <span class="pcard__glow" aria-hidden="true"></span>
+        <div class="pcard__i" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3 class="h3">Capital stays local</h3>
+        <p class="body" style="font-size:.94rem">
+          Marketing budget that used to leave the region now circulates between the club, the SME and the
+          supporter — a closed loop instead of a leak.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= 5. THE PLATFORM ============================= -->
+<section class="section" id="platform">
+  <div class="container">
+    <div class="head-block" data-reveal="up">
+      <span class="eyebrow is-emerald">04 — How the platform works</span>
+      <h2 class="h1">One product.<br><span class="grad-em">Three winners.</span></h2>
+      <p class="lead">
+        Fanhour only works if every side of the triangle gains something it could not get alone. Fans get
+        free competition, SMEs get measurable reach, clubs get revenue without risk.
+      </p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Stakeholders" id="tabs" style="margin-top:34px">
+      <button class="tab" role="tab" aria-selected="true" data-tab="fans">For the Fans</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="smes">For the SMEs</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="clubs">For the Clubs</button>
+    </div>
+
+    <div class="grid-3" id="panels">
+      <!-- FANS -->
+      <article class="card pcard" id="panel-fans" data-panel="fans" data-reveal="up">
+        <span class="pcard__glow" aria-hidden="true"></span>
+        <div class="pcard__i" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg>
+        </div>
+        <div>
+          <span class="badge is-em">Free to play</span>
+          <h3 class="h3" style="margin-top:14px">Skill, not chance</h3>
+        </div>
+        <p class="body" style="font-size:.94rem">
+          Weekly, skill-based prediction challenges tied directly to their club's matches. Fans play for
+          free, climb the club leaderboard, and win rewards funded by local sponsors.
+        </p>
+        <ul>
+          <li>Free entry, every week of the season</li>
+          <li>Skill-based outcomes — no wagering, no chance mechanics, no gambling</li>
+          <li>Club-specific leaderboards and seasonal standings</li>
+          <li>Sponsor-funded prizes and redeemable coupons from local businesses</li>
+        </ul>
+      </article>
+
+      <!-- SMEs -->
+      <article class="card pcard pcard--gold" id="panel-smes" data-panel="smes" data-reveal="up" style="--d:110ms">
+        <span class="pcard__glow" aria-hidden="true"></span>
+        <div class="pcard__i" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 9 5 3h14l2 6"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>
+        </div>
+        <div>
+          <span class="badge is-gold">From SAR 5,000 / month</span>
+          <h3 class="h3" style="margin-top:14px">Sponsorship they can actually buy</h3>
+        </div>
+        <p class="body" style="font-size:.94rem">
+          Affordable digital packages with direct reach into an engaged, local, club-loyal audience — and
+          performance data instead of a logo on a wall.
+        </p>
+        <ul>
+          <li>Direct digital reach to verified club supporters</li>
+          <li>Measurable ROI: impressions, engagement, redemptions</li>
+          <li>Coupon redemptions that drive real footfall in-store</li>
+          <li>Monthly commitment — no season-long lock-in</li>
+        </ul>
+      </article>
+
+      <!-- CLUBS -->
+      <article class="card pcard" id="panel-clubs" data-panel="clubs" data-reveal="up" style="--d:220ms">
+        <span class="pcard__glow" aria-hidden="true"></span>
+        <div class="pcard__i" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M6 3h12v5a6 6 0 0 1-12 0V3Z"/><path d="M6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3"/><path d="M9 21h6M12 14v7"/></svg>
+        </div>
+        <div>
+          <span class="badge is-em">Zero upfront cost</span>
+          <h3 class="h3" style="margin-top:14px">Revenue without risk</h3>
+        </div>
+        <p class="body" style="font-size:.94rem">
+          Fanhour operates as a purely managed technology layer. The club contributes its brand and its
+          fixtures; we build, run, sell and support everything else.
+        </p>
+        <ul>
+          <li><strong style="color:var(--white);font-weight:500">60% revenue share</strong> to the club</li>
+          <li>Zero upfront cost and zero financial risk</li>
+          <li>Fully managed: platform, sales, support and reporting</li>
+          <li>First-party fan data and engagement insight for the club</li>
+        </ul>
+
+        <div class="revshare" data-donut>
+          <div class="donut" aria-hidden="true"><span class="donut__v num grad-em">60<small>%</small></span></div>
+          <div class="rev-legend">
+            <div><i style="background:var(--emerald-lit)"></i> Club share — 60%</div>
+            <div><i style="background:rgba(255,255,255,.2)"></i> Fanhour — platform, sales &amp; ops</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- sponsorship tiers -->
+    <div class="tierband" data-reveal="up">
+      <div class="tierband__head">
+        <div>
+          <span class="eyebrow">Digital sponsorship tiers</span>
+          <h3 class="h2" style="margin-top:12px">One package, sliced three ways.</h3>
+        </div>
+        <p class="body" style="font-size:.92rem;max-width:44ch">
+          Every tier is monthly, digital and measurable — the same club audience that used to cost half a
+          million Riyals to reach.
+        </p>
+      </div>
+      <div class="tiers">
+        <div class="tier">
+          <span class="tier__n">Foundation</span>
+          <div class="tier__p num">SAR 5,000 <small>/mo</small></div>
+          <p class="tier__d">Entry visibility across the weekly challenges and the club feed.</p>
+        </div>
+        <div class="tier tier--feat">
+          <span class="tier__n" style="color:var(--emerald-lit)">Activation</span>
+          <div class="tier__p num">Mid tier</div>
+          <p class="tier__d">Branded challenges plus coupon campaigns with full redemption tracking.</p>
+        </div>
+        <div class="tier">
+          <span class="tier__n">Exclusive</span>
+          <div class="tier__p num">Category lock</div>
+          <p class="tier__d">Sole sponsor of a category, headline placement and complete reporting.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= 6. PILOT & VISION ============================= -->
+<section class="section" id="pilot">
+  <div class="container grid-2">
+    <div class="head-block" data-reveal="up">
+      <span class="eyebrow">05 — Pilot &amp; Vision</span>
+      <h2 class="h1">Proven in the regions,<br><span class="grad-gold">before anywhere else.</span></h2>
+      <p class="body">
+        We are launching strictly regulated, proof-of-concept pilots — deliberately narrow, fully measured,
+        and built alongside the clubs themselves rather than sold to them.
+      </p>
+
+      <div class="timeline" style="margin-top:34px" data-reveal="up" data-stagger>
+        <div class="tl">
+          <span class="tl__dot">01</span>
+          <div class="tl__body">
+            <span class="tl__meta">Pilot One · Qassim</span>
+            <h3 class="h3" style="margin-block:6px 6px">Al-Hazem FC — Ar-Rass</h3>
+            <p class="body" style="font-size:.92rem">
+              First proof-of-concept deployment, in the heart of the Kingdom's date economy.
+            </p>
+          </div>
+        </div>
+        <div class="tl tl--next">
+          <span class="tl__dot">02</span>
+          <div class="tl__body">
+            <span class="tl__meta">Pilot Two · Asir</span>
+            <h3 class="h3" style="margin-block:6px 6px">Damac FC — Khamis Mushait</h3>
+            <p class="body" style="font-size:.92rem">
+              Second region, second economy — honey production and a growing tourism market.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack-lg">
+      <div class="figure" data-reveal="zoom" style="aspect-ratio:16/11">
+        <img src="https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&w=1200&q=70"
+             alt="Stadium seating at dusk" loading="lazy" onerror="this.remove()">
+        <span class="figure__cap">Regional pilots · Qassim &amp; Asir</span>
+      </div>
+      <div class="compliance" data-reveal="up" data-stagger>
+        <div class="comp"><b>100% Saudi-owned SJSC</b><span>Fanhour operates as a Simplified Joint-Stock Company.</span></div>
+        <div class="comp"><b>Ministry of Sport</b><span>Fully compliant with applicable club and competition regulations.</span></div>
+        <div class="comp"><b>ZATCA e-invoicing</b><span>All sponsorship billing issued through compliant e-invoicing.</span></div>
+        <div class="comp"><b>PDPL</b><span>Fan data handled under the Personal Data Protection Law.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= CTA ============================= -->
+<section class="section" id="cta" style="padding-top:0">
+  <div class="container">
+    <div class="cta" data-reveal="zoom">
+      <span class="cta__ring" aria-hidden="true"></span>
+      <span class="cta__ring" aria-hidden="true"></span>
+      <span class="eyebrow is-emerald" style="justify-content:center">Regional clubs · Local SMEs · Every supporter</span>
+      <h2 class="h1" style="margin-block:20px 18px">Join the Digital<br><span class="grad-em">Fan Revolution.</span></h2>
+      <p class="lead" style="margin-inline:auto">
+        If you run a regional club, a local business, or you simply refuse to accept that 5,000 seats is the
+        limit of what a club can be — we would like to talk.
+      </p>
+      <div class="cta__actions">
+        <a href="mailto:hello@fanhour.sa?subject=Fanhour%20—%20Pilot%20enquiry" class="btn">
+          Start a conversation
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#platform" class="btn-ghost">Review the model</a>
+      </div>
+      <div class="badge-row" style="justify-content:center;margin-top:34px">
+        <span class="badge is-em">Zero upfront cost to clubs</span>
+        <span class="badge is-gold">From SAR 5,000 / month</span>
+        <span class="badge">Skill-based · No gambling</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="brand">
+      <span class="brand__mark" aria-hidden="true"><span>FH</span></span>
+      <div>
+        <div class="brand__name">Fanhour<span class="brand__ar" lang="ar" dir="rtl">فان أور</span></div>
+        <div class="tiny">Saudi fan-engagement technology · SJSC</div>
+      </div>
+    </div>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="#disconnect">The Gap</a>
+      <a href="#barrier">The Barrier</a>
+      <a href="#solution">The Break</a>
+      <a href="#platform">Platform</a>
+      <a href="#pilot">Pilot</a>
+      <a href="mailto:hello@fanhour.sa">Contact</a>
+    </nav>
+    <p class="tiny">© <span id="yr">2026</span> Fanhour. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var qs  = function (s, c) { return (c || document).querySelector(s); };
+  var qsa = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+  var clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; };
+  /* normalised sub-range: returns 0..1 for p travelling from a to b */
+  var sub = function (p, a, b) { return clamp((p - a) / (b - a), 0, 1); };
+  var lerp = function (a, b, t) { return a + (b - a) * t; };
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------------------------------------------------
+     Headline: split into animatable words
+     --------------------------------------------------------- */
+  var heroTitle = qs('#heroTitle');
+  if (heroTitle) {
+    qsa('.word', heroTitle).forEach(function (w, i) {
+      w.firstElementChild.style.setProperty('--d', (i * 80) + 'ms');
+    });
+    requestAnimationFrame(function () {
+      setTimeout(function () { heroTitle.classList.add('in'); }, 120);
+    });
+  }
+
+  /* ---------------------------------------------------------
+     Skyline bars (procedural, deterministic)
+     --------------------------------------------------------- */
+  var skyline = qs('#skyline');
+  if (skyline) {
+    var heights = [.42,.68,.30,.86,.55,1,.62,.38,.78,.48,.92,.34,.70,.52,.82];
+    heights.forEach(function (h, i) {
+      var b = document.createElement('span');
+      b.style.setProperty('--h', h);
+      b.style.transitionDelay = (i * 12) + 'ms';
+      skyline.appendChild(b);
+    });
+  }
+
+  /* ---------------------------------------------------------
+     Shards for the stadium break (deterministic pseudo-random)
+     --------------------------------------------------------- */
+  var shardHost = qs('#shards');
+  if (shardHost) {
+    var COUNT = window.innerWidth < 700 ? 26 : 44;
+    var seed = 20260802;
+    var rnd = function () { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < COUNT; i++) {
+      var el   = document.createElement('span');
+      var ang  = (i / COUNT) * Math.PI * 2 + rnd() * .4;
+      var dist = 260 + rnd() * 620;
+      el.className = 'shard';
+      el.style.setProperty('--x', Math.round(Math.cos(ang) * dist));
+      el.style.setProperty('--y', Math.round(Math.sin(ang) * dist * .72));
+      el.style.setProperty('--r', Math.round((rnd() - .5) * 640));
+      el.style.setProperty('--w', Math.round(16 + rnd() * 54) + 'px');
+      el.style.setProperty('--h', Math.round(12 + rnd() * 40) + 'px');
+      el.style.setProperty('--a', Math.round(rnd() * 360) + 'deg');
+      frag.appendChild(el);
+    }
+    shardHost.appendChild(frag);
+  }
+
+  /* set crack path lengths so they can "draw" */
+  qsa('.cracks path').forEach(function (p) {
+    var len = p.getTotalLength ? p.getTotalLength() : 300;
+    p.style.setProperty('--len', len);
+  });
+
+  /* ---------------------------------------------------------
+     Number counters
+     --------------------------------------------------------- */
+  function fmt(el, value) {
+    var dec    = parseInt(el.dataset.decimals || '0', 10);
+    var prefix = el.dataset.prefix || '';
+    var suffix = el.dataset.suffix || '';
+    var out    = value.toFixed(dec);
+    if (el.dataset.format === 'comma') out = Number(out).toLocaleString('en-US');
+    el.textContent = prefix + out + suffix;
+  }
+
+  function runCounter(el) {
+    var target = parseFloat(el.dataset.count);
+    var dur    = 1700;
+    var t0     = null;
+    if (reduced) { fmt(el, target); return; }
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var t = clamp((ts - t0) / dur, 0, 1);
+      var e = 1 - Math.pow(1 - t, 4);            // easeOutQuart
+      fmt(el, target * e);
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ---------------------------------------------------------
+     Reveal on scroll (IntersectionObserver)
+     --------------------------------------------------------- */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target;
+
+      if (el.hasAttribute('data-stagger')) {
+        Array.prototype.forEach.call(el.children, function (child, i) {
+          child.style.setProperty('--d', (i * 90) + 'ms');
+          child.setAttribute('data-reveal', 'up');
+          requestAnimationFrame(function () { child.classList.add('in'); });
+        });
+      }
+      if (el.hasAttribute('data-bar'))   el.classList.add('in');
+      if (el.hasAttribute('data-donut')) {
+        var donut = qs('.donut', el);
+        if (donut) {
+          var t0 = null;
+          var step = function (ts) {
+            if (t0 === null) t0 = ts;
+            var t = clamp((ts - t0) / 1500, 0, 1);
+            donut.style.setProperty('--v', (60 * (1 - Math.pow(1 - t, 3))).toFixed(1));
+            if (t < 1) requestAnimationFrame(step);
+          };
+          reduced ? donut.style.setProperty('--v', 60) : requestAnimationFrame(step);
+        }
+      }
+      if (el.hasAttribute('data-count')) runCounter(el);
+
+      el.classList.add('in');
+      io.unobserve(el);
+    });
+  }, { threshold: .18, rootMargin: '0px 0px -8% 0px' });
+
+  qsa('[data-reveal], [data-stagger], [data-bar], [data-donut], [data-count]').forEach(function (el) {
+    io.observe(el);
+  });
+
+  /* ---------------------------------------------------------
+     Scene engine — one rAF loop drives every scroll effect
+     --------------------------------------------------------- */
+  var nav      = qs('#nav');
+  var progress = qs('.progress');
+  var scenes   = qsa('[data-scene]').map(function (el) {
+    return {
+      el: el,
+      stage: qs('.scene__stage', el),
+      caps: qsa('.cap', el),
+      counters: qsa('[data-scene-count]', el),
+      countersDone: false,
+      phone: qs('.phone', el),
+      cracks: qsa('.cracks path', el),
+      lastCap: -1
+    };
+  });
+  var parallax = qsa('[data-parallax]').map(function (el) {
+    return { el: el, k: parseFloat(el.dataset.parallax) };
+  });
+  var railBtns = qsa('#rail button');
+  var sections = railBtns.map(function (b) { return qs('#' + b.dataset.go); });
+
+  var ticking = false;
+
+  function frame() {
+    ticking = false;
+    var y  = window.pageYOffset || document.documentElement.scrollTop;
+    var vh = window.innerHeight;
+    var docH = document.documentElement.scrollHeight - vh;
+
+    /* progress bar + nav state */
+    progress.style.setProperty('--sp', docH > 0 ? clamp(y / docH, 0, 1) : 0);
+    nav.classList.toggle('stuck', y > 40);
+
+    /* parallax */
+    if (!reduced) {
+      parallax.forEach(function (p) {
+        /* written as a custom property so each element keeps its own base transform */
+        p.el.style.setProperty('--py', (y * p.k).toFixed(1) + 'px');
+      });
+    }
+
+    /* scenes */
+    scenes.forEach(function (s) {
+      var rect  = s.el.getBoundingClientRect();
+      var total = rect.height - vh;
+      if (total <= 0) return;
+      var p = clamp(-rect.top / total, 0, 1);
+
+      s.el.style.setProperty('--p', p.toFixed(4));
+
+      /* caption switching in thirds */
+      if (s.caps.length) {
+        var idx = p < .3 ? 0 : p < .62 ? 1 : 2;
+        if (idx !== s.lastCap) {
+          s.caps.forEach(function (c, i) { c.classList.toggle('on', i === idx); });
+          s.lastCap = idx;
+        }
+      }
+
+      /* scene-scoped counters fire once, when the scene is engaged */
+      if (!s.countersDone && p > .04 && s.counters.length) {
+        s.counters.forEach(function (c) {
+          c.dataset.count = c.dataset.sceneCount;
+          runCounter(c);
+        });
+        s.countersDone = true;
+      }
+
+      /* the break scene: three overlapping sub-phases */
+      if (s.phone) {
+        var p1 = sub(p, .00, .40);   // camera push-in on the stadium
+        var pc = sub(p, .26, .48);   // cracks draw
+        var p2 = sub(p, .40, .70);   // shatter
+        var p3 = sub(p, .52, .88);   // phone rises
+        s.el.style.setProperty('--p1', p1.toFixed(4));
+        s.el.style.setProperty('--pc', pc.toFixed(4));
+        s.el.style.setProperty('--p2', p2.toFixed(4));
+        s.el.style.setProperty('--p3', p3.toFixed(4));
+        s.phone.classList.toggle('lit', p3 > .55);
+      }
+
+      /* the barrier scene: stamp lands late */
+      if (s.el.id === 'barrier') {
+        s.el.style.setProperty('--stamp', sub(p, .62, .78).toFixed(3));
+      }
+    });
+
+    /* rail active state */
+    var active = 0;
+    sections.forEach(function (sec, i) {
+      if (sec && sec.getBoundingClientRect().top <= vh * .45) active = i;
+    });
+    railBtns.forEach(function (b, i) { b.classList.toggle('on', i === active); });
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(frame); }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  frame();
+
+  /* ---------------------------------------------------------
+     Rail navigation
+     --------------------------------------------------------- */
+  railBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = qs('#' + b.dataset.go);
+      if (t) t.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+
+  /* ---------------------------------------------------------
+     Stakeholder tabs — filter on small screens, all three on desktop
+     --------------------------------------------------------- */
+  var tabs   = qsa('#tabs .tab');
+  var panels = qsa('[data-panel]');
+  var mqNarrow = window.matchMedia('(max-width: 900px)');
+
+  function applyTabs() {
+    var selected = (qs('#tabs .tab[aria-selected="true"]') || tabs[0]).dataset.tab;
+    panels.forEach(function (p) {
+      p.style.display = (!mqNarrow.matches || p.dataset.panel === selected) ? '' : 'none';
+    });
+    qs('#tabs').style.display = mqNarrow.matches ? 'flex' : 'none';
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (o) { o.setAttribute('aria-selected', String(o === t)); });
+      applyTabs();
+    });
+  });
+  if (mqNarrow.addEventListener) mqNarrow.addEventListener('change', applyTabs);
+  applyTabs();
+
+  /* ---------------------------------------------------------
+     Pointer spotlight + card tilt (desktop, fine pointers only)
+     --------------------------------------------------------- */
+  var fine = window.matchMedia('(pointer: fine)').matches;
+  if (fine && !reduced) {
+    var spot = qs('.spotlight');
+    var mx = window.innerWidth / 2, my = window.innerHeight / 2, sx = mx, sy = my, running = false;
+    function follow() {
+      sx = lerp(sx, mx, .08); sy = lerp(sy, my, .08);
+      spot.style.setProperty('--mx', sx.toFixed(1) + 'px');
+      spot.style.setProperty('--my', sy.toFixed(1) + 'px');
+      /* park the loop once the light has caught up with the pointer */
+      if (Math.abs(mx - sx) < .5 && Math.abs(my - sy) < .5) { running = false; return; }
+      requestAnimationFrame(follow);
+    }
+    window.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+      if (!running) { running = true; requestAnimationFrame(follow); }
+    }, { passive: true });
+
+    qsa('.pcard').forEach(function (card) {
+      card.addEventListener('mousemove', function (e) {
+        var r = card.getBoundingClientRect();
+        var rx = ((e.clientY - r.top) / r.height - .5) * -5;
+        var ry = ((e.clientX - r.left) / r.width  - .5) *  5;
+        card.style.transform = 'translateY(-8px) perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+      });
+      card.addEventListener('mouseleave', function () { card.style.transform = ''; });
+    });
+  }
+
+  /* year */
+  var yr = qs('#yr'); if (yr) yr.textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
