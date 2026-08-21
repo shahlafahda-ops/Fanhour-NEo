@@ -17,6 +17,35 @@ app.use((req, res, next) => {
   next();
 });
 
+/*
+ * CORS for a separately-hosted front end (e.g. a Lovable preview calling this
+ * API). An explicit allowlist, never a wildcard: these endpoints issue claim
+ * tokens and accept phone numbers, so any origin that can call them can drive
+ * the claim gate.
+ *
+ * Set FH_ALLOWED_ORIGINS to a comma-separated list. Unset means same-origin
+ * only, which is the correct production posture when the API also serves the UI.
+ */
+const ALLOWED_ORIGINS = (process.env.FH_ALLOWED_ORIGINS || '')
+  .split(',').map((s) => s.trim()).filter(Boolean);
+
+app.use((req, res, next) => {
+  const origin = req.get('origin');
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.set('Access-Control-Allow-Origin', origin);
+    // The allowlist is origin-dependent, so caches must key on Origin.
+    res.set('Vary', 'Origin');
+    res.set('Access-Control-Allow-Headers',
+      'content-type, x-fh-session, x-fh-admin-key, x-fh-board-key, authorization, idempotency-key');
+    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.set('Access-Control-Max-Age', '600');
+  }
+  // Credentials are never allowed: the fan session travels in a header, not a
+  // cookie, so there is nothing to gain and a CSRF surface to lose.
+  if (req.method === 'OPTIONS') return res.sendStatus(origin && ALLOWED_ORIGINS.includes(origin) ? 204 : 403);
+  next();
+});
+
 /* Coarse per-IP rate limit. Not a substitute for an edge WAF, but it keeps a
  * single client from hammering OTP or claim endpoints. */
 const hits = new Map();

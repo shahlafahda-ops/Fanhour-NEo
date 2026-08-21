@@ -16,6 +16,7 @@ process.env.FH_ADMIN_KEY = 'test-admin-key';
 process.env.FH_BOARD_KEY = 'test-board-key';
 process.env.FH_RATE_LIMIT = '0';
 process.env.FH_DEMO = '1';
+process.env.FH_ALLOWED_ORIGINS = 'https://preview.lovable.app, https://fanhour.example';
 
 const { db } = await import('../server/db.js');
 const { seed } = await import('../server/seed.js');
@@ -193,4 +194,56 @@ test('the demo reset is refused when demo mode is off', async () => {
   assert.equal(res.status, 403);
   assert.equal(res.body.error, 'DEMO_MODE_OFF');
   process.env.FH_DEMO = prev;
+});
+
+/* ── CORS for a separately-hosted front end ─────────────────────── */
+
+test('an allowlisted origin receives a CORS grant naming exactly that origin', async () => {
+  const res = await fetch(`${base}/api/challenge/live`, {
+    headers: { origin: 'https://preview.lovable.app' },
+  });
+  assert.equal(res.headers.get('access-control-allow-origin'), 'https://preview.lovable.app');
+  assert.equal(res.headers.get('vary'), 'Origin', 'caches must key on Origin');
+
+  const allowed = res.headers.get('access-control-allow-headers') || '';
+  for (const h of ['x-fh-session', 'idempotency-key', 'content-type']) {
+    assert.ok(allowed.includes(h), `${h} must be permitted or the fan flow breaks`);
+  }
+});
+
+test('a preflight from an allowlisted origin succeeds', async () => {
+  const res = await fetch(`${base}/api/challenge/start`, {
+    method: 'OPTIONS',
+    headers: { origin: 'https://preview.lovable.app', 'access-control-request-method': 'POST' },
+  });
+  assert.equal(res.status, 204);
+});
+
+test('CORS is refused for an origin that is not on the allowlist', async () => {
+  const res = await fetch(`${base}/api/challenge/live`, {
+    headers: { origin: 'https://evil.example.com' },
+  });
+  assert.equal(res.headers.get('access-control-allow-origin'), null,
+    'an unlisted origin gets no CORS grant');
+});
+
+test('a preflight from an unlisted origin is rejected outright', async () => {
+  const res = await fetch(`${base}/api/challenge/start`, {
+    method: 'OPTIONS',
+    headers: { origin: 'https://evil.example.com', 'access-control-request-method': 'POST' },
+  });
+  assert.equal(res.status, 403);
+});
+
+test('CORS never returns a wildcard origin', async () => {
+  const res = await fetch(`${base}/api/challenge/live`, {
+    headers: { origin: 'https://anything.example.com' },
+  });
+  assert.notEqual(res.headers.get('access-control-allow-origin'), '*',
+    'a wildcard would let any site drive the claim gate');
+});
+
+test('CORS never allows credentials — the session is a header, not a cookie', async () => {
+  const res = await fetch(`${base}/api/challenge/live`);
+  assert.equal(res.headers.get('access-control-allow-credentials'), null);
 });
