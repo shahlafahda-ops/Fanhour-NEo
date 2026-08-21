@@ -50,7 +50,33 @@ npm run build && npm start     # http://localhost:8787
 |---|---|---|
 | Fan challenge | `/` | Arabic, RTL |
 | Merchant validator | `/merchant` | demo staff `staff_demo` / PIN `1234` |
+| Live value board | `/board?k=…` | projector surface, key-gated, aggregate only |
 | Admin API | `/api/admin/*` | header `x-fh-admin-key` |
+
+## Demo
+
+See **[DEMO.md](DEMO.md)** for the full runbook. Short version:
+
+```bash
+rm -rf data && npm run seed && npm run demo   # prior engagement on the board
+npm run build && FH_DEMO=1 npm start
+```
+
+The board at `/board?k=…` answers the pitch question — *التفاعل موجود، لكن كيف
+يتحول إلى قيمة؟* — with three beats: the engagement on the right, the question
+in the middle with a join QR, the converted value on the left. It polls every
+two seconds, so it fills while the room plays.
+
+`FH_DEMO=1` shows the OTP on the fan's screen so the journey can be filmed
+without a live SMS route. It renders as an obvious scaffold, the API response is
+flagged `demoMode: true`, and the launch gate reports **FAIL** while it is set.
+`POST /api/admin/demo/reset` clears fan activity between runs without touching
+fixtures, challenges or commercial configuration.
+
+The board is **not** the club/sponsor self-serve dashboard the spec forbids: it
+is FanHour-operated, key-gated, aggregate-only, has no club login and no
+per-sponsor drill-down, and is not a contractual reporting deliverable. Sponsor
+reporting stays manual (section 16).
 
 ## Tests
 
@@ -58,10 +84,14 @@ npm run build && npm start     # http://localhost:8787
 npm test
 ```
 
-32 tests, one per bullet of the Appendix B9 acceptance gate plus the B4
+43 tests. `acceptance.test.js` covers the Appendix B9 gate and the B4
 controls: server-authoritative scoring, answer immutability, OTP attempt and
 resend limits, concurrent cap safety, idempotent issue/redeem, PII absence in
 the validator and in analytics, locality cell suppression, and the launch gate.
+`demo-board.test.js` covers the board and demo surfaces: key separation, that
+the board leaks no fan identifier, that its figures reconcile with the database,
+that demo traffic runs through the real code paths rather than writing
+fabricated metrics, and that demo mode cannot be shipped on.
 
 ## What the database enforces
 
@@ -103,6 +133,8 @@ Copy `.env.example` and set real values before any non-local deployment.
 | `FH_ADMIN_KEY` | Guards `/api/admin/*`. |
 | `FH_DATA_DIR` | SQLite location (default `./data`). |
 | `FH_RATE_LIMIT` | Per-IP requests/minute (default 120; `0` disables). |
+| `FH_BOARD_KEY` | Guards `/api/board` and the `/board` screen. |
+| `FH_DEMO` | `1` enables demo mode. **Fails the launch gate.** Never set in production. |
 | `PORT` | API port (default 8787). |
 
 ## Known gaps before Day 0
@@ -127,6 +159,11 @@ These are deliberate and tracked, not oversights:
    *inputs*. The spec explicitly forbids a self-serve sponsor dashboard.
 6. **Staff auth is in-memory.** Merchant sessions live in a `Map` and are lost on
    restart. Fine for a single-process pilot; needs a shared store if scaled out.
+7. **No push notifications.** The return cue is the football calendar plus
+   club-owned distribution and an optional consented reminder. Streaks and push
+   loops are on the do-not-build list.
+8. **Demo sponsor, offer, outlet and staff PIN are illustrative**, not signed
+   deals. Replace them before showing this to a real merchant.
 
 ## Launch readiness
 

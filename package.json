@@ -10,7 +10,9 @@
     "dev:api": "node server/index.js",
     "seed": "node server/seed.js",
     "test": "node --test test/*.test.js",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "demo": "FH_DEMO=1 node server/demo-seed.js",
+    "dev:demo": "FH_DEMO=1 node server/index.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

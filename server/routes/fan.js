@@ -13,6 +13,7 @@ import {
   issueClaim, publicClaim, getOffer,
 } from '../lib/claims.js';
 import { sendOtp, verifyOtp, cooldownRemaining } from '../lib/otp.js';
+import { getSmsProvider } from '../lib/sms.js';
 
 export const TERMS_VERSION = 'ahz-pilot-terms-v1';
 const router = express.Router();
@@ -59,6 +60,7 @@ router.get('/challenge/live', (req, res) => {
 
   res.json({
     open: true,
+    demoMode: process.env.FH_DEMO === '1',
     challenge: {
       id: challenge.id,
       title_ar: challenge.title_ar,
@@ -304,7 +306,25 @@ router.post('/claim/verify/start', async (req, res) => {
     return res.status(429).json({ error: out.reason, message_ar: messages[out.reason], retryAfter: out.retryAfter });
   }
 
-  res.json({ ok: true, verificationId: verification.id, expiresAt: out.expiresAt, mobileLast2: e164.slice(-2) });
+  const payload = {
+    ok: true,
+    verificationId: verification.id,
+    expiresAt: out.expiresAt,
+    mobileLast2: e164.slice(-2),
+  };
+
+  /*
+   * Demo mode returns the OTP so the journey can be filmed on a real phone
+   * without a live SMS route. It is gated behind FH_DEMO and the response is
+   * flagged, so a demo build is impossible to mistake for a production one.
+   * The launch-readiness gate fails while FH_DEMO is set.
+   */
+  if (process.env.FH_DEMO === '1') {
+    payload.demoOtp = getSmsProvider().lastFor(e164)?.code || null;
+    payload.demoMode = true;
+  }
+
+  res.json(payload);
 });
 
 /** OTP check + claim issuance. Verification must never occur later than

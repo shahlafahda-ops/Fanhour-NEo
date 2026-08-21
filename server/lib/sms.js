@@ -29,6 +29,11 @@ export class MockSmsProvider {
   lastFor(e164) {
     return [...this.sent].reverse().find((m) => m.to === e164) || null;
   }
+
+  /** Clear recorded messages — used when resetting a demo run. */
+  clear() {
+    this.sent = [];
+  }
 }
 
 let provider = new MockSmsProvider();

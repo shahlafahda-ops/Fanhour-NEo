@@ -16,6 +16,7 @@ export default function Otp({ verification, offerId, onIssued, onBack }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [cooldown, setCooldown] = useState(60);
+  const [demoOtp, setDemoOtp] = useState(verification.demoOtp || null);
 
   useEffect(() => {
     if (cooldown <= 0) return undefined;
@@ -51,7 +52,7 @@ export default function Otp({ verification, offerId, onIssued, onBack }) {
     setBusy(true);
     setError(null);
     try {
-      await fanApi.verifyStart({
+      const res = await fanApi.verifyStart({
         birthYear: verification.birthYear,
         locality: verification.locality,
         mobile: verification.mobile,
@@ -59,6 +60,7 @@ export default function Otp({ verification, offerId, onIssued, onBack }) {
         offerId,
         resend: true,
       });
+      if (res.demoOtp) setDemoOtp(res.demoOtp);
       setCooldown(60);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'تعذّر إعادة الإرسال.');
@@ -92,6 +94,16 @@ export default function Otp({ verification, offerId, onIssued, onBack }) {
           autoFocus
         />
       </div>
+
+      {demoOtp && (
+        <div className="demo-otp">
+          <span className="demo-otp__tag">وضع العرض التوضيحي</span>
+          <span className="demo-otp__code num">{demoOtp}</span>
+          <span className="demo-otp__note">
+            يظهر الرمز هنا لأغراض العرض فقط. في التشغيل الفعلي يصل عبر رسالة نصية.
+          </span>
+        </div>
+      )}
 
       {error && <Notice tone="err">{error}</Notice>}
 

@@ -4,6 +4,7 @@ import { sweepChallengeStates } from './lib/challenge.js';
 import fanRoutes from './routes/fan.js';
 import merchantRoutes from './routes/merchant.js';
 import adminRoutes from './routes/admin.js';
+import boardRoutes from './routes/board.js';
 
 const app = express();
 app.use(express.json({ limit: '64kb' }));
@@ -36,6 +37,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true, at: new Date().toISOSt
 app.use('/api', fanRoutes);
 app.use('/api/merchant', merchantRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/board', boardRoutes);
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'NOT_FOUND' }));
 

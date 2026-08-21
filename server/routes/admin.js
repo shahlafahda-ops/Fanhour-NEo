@@ -2,7 +2,7 @@ import express from 'express';
 import { db } from '../db.js';
 import { audit } from '../lib/core.js';
 import { sweepChallengeStates } from '../lib/challenge.js';
-import { isProductionSmsConfigured } from '../lib/sms.js';
+import { isProductionSmsConfigured, getSmsProvider } from '../lib/sms.js';
 import { QASSIM_RELEVANT } from '../lib/core.js';
 
 const router = express.Router();
@@ -217,6 +217,7 @@ router.get('/launch-readiness', (req, res) => {
     db.prepare(`SELECT 1 FROM audit_log WHERE action = 'gate_attested' AND subject_id = ? LIMIT 1`).get(key) ? 'ATTESTED' : 'OPEN';
 
   const technical = {
+    demoModeOff: process.env.FH_DEMO === '1' ? 'FAIL — demo mode exposes the OTP in API responses' : 'PASS',
     smsOtpRouteOperational: isProductionSmsConfigured() ? 'PASS' : 'FAIL — stub SMS provider in use',
     merchantValidatorTested: db.prepare('SELECT COUNT(*) c FROM validation_attempts').get().c > 0 ? 'PASS' : 'OPEN',
     fixtureScheduleAttached: db.prepare('SELECT COUNT(*) c FROM fixtures WHERE opponent_confirmed = 1').get().c > 0 ? 'PARTIAL' : 'OPEN',
@@ -259,6 +260,43 @@ router.post('/gates/:key/attest', (req, res) => {
     subjectType: 'launch_gate', subjectId: req.params.key, reason,
   });
   res.json({ ok: true, gate: req.params.key });
+});
+
+/* ── Demo control ───────────────────────────────────────────────── */
+
+/**
+ * Wipe fan-side activity so a demo can be re-run from a clean board.
+ *
+ * Only available while FH_DEMO=1, and it deliberately leaves fixtures,
+ * challenges, questions and commercial configuration intact — a demo reset is
+ * not a production data-deletion tool.
+ */
+router.post('/demo/reset', (req, res) => {
+  if (process.env.FH_DEMO !== '1') {
+    return res.status(403).json({ error: 'DEMO_MODE_OFF' });
+  }
+
+  // Order matters: foreign keys are ON, so children go before parents.
+  // sessions.fan_id references fans, so sessions must be cleared before fans.
+  const wipe = db.transaction(() => {
+    db.prepare('DELETE FROM redemptions').run();
+    db.prepare('DELETE FROM validation_attempts').run();
+    db.prepare('DELETE FROM claims').run();
+    db.prepare('DELETE FROM verifications').run();
+    db.prepare('DELETE FROM verified_results').run();
+    db.prepare('DELETE FROM results').run();
+    db.prepare('DELETE FROM answers').run();
+    db.prepare('DELETE FROM sessions').run();
+    db.prepare('DELETE FROM fans').run();
+    db.prepare('DELETE FROM events').run();
+    db.prepare('DELETE FROM idempotency').run();
+    db.prepare('UPDATE offers SET claimed_count = 0').run();
+  });
+  wipe();
+
+  getSmsProvider().clear?.();
+  audit({ actorType: 'admin', action: 'demo_reset', reason: 'demo run restarted' });
+  res.json({ ok: true });
 });
 
 /* ── Audit trail ────────────────────────────────────────────────── */
