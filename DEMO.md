@@ -9,26 +9,39 @@ demo — every number moves because someone in the room actually did something.
 
 ---
 
-## 1. Setup (5 minutes before)
+## 1. Setup (one command)
 
 ```bash
 npm install
-rm -rf data
-npm run seed          # fixtures + open F1 challenge + demo sponsor/offer
-npm run demo          # prior engagement, so the board opens on a real base
-npm run build
-FH_DEMO=1 PORT=8787 npm start
+npm run demo:start -- --force
 ```
 
-Open three things:
+That builds, clears previous demo data, seeds the fixtures and the prior
+engagement, starts the server in demo mode, and prints the three URLs — using
+your machine's LAN address, so phones on the room wifi can actually reach it.
 
-| Screen | URL | Who holds it |
-|---|---|---|
-| **Value board** | `/board?k=dev-board-key` | projector |
-| **Fan journey** | `/` | presenter's phone (screen-recorded) |
-| **Merchant validator** | `/merchant` | second phone or laptop |
+```
+  Board opens on: 96 completions · 38 verified fans · 38 claims · 17 redemptions
 
-Merchant login: `staff_demo` / PIN `1234`.
+  ─────────────────────────────────────────────────────────
+  Board (projector)   http://192.168.x.x:8787/board?k=dev-board-key
+  Fan journey         http://192.168.x.x:8787/
+  Merchant validator  http://192.168.x.x:8787/merchant     staff_demo / 1234
+  ─────────────────────────────────────────────────────────
+```
+
+`--force` is required because the launcher deletes the local database. Without
+it, it refuses to run when one already exists.
+
+| Screen | Who holds it |
+|---|---|
+| **Value board** | projector |
+| **Fan journey** | presenter's phone (screen-recorded) |
+| **Merchant validator** | second phone or laptop |
+
+Check the board and the fan page both load on a phone over the room wifi
+**before** the audience is watching — a captive portal or client isolation on
+guest wifi will block it, and that is not something to discover live.
 
 Set `FH_BOARD_KEY` and `FH_ADMIN_KEY` to real values before showing this
 anywhere public.

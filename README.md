@@ -58,9 +58,12 @@ npm run build && npm start     # http://localhost:8787
 See **[DEMO.md](DEMO.md)** for the full runbook. Short version:
 
 ```bash
-rm -rf data && npm run seed && npm run demo   # prior engagement on the board
-npm run build && FH_DEMO=1 npm start
+npm run demo:start -- --force
 ```
+
+Builds, seeds fixtures and prior engagement, starts in demo mode, and prints the
+board / fan / merchant URLs on your LAN address so phones in the room can reach
+them. `--force` is required because it deletes the local database.
 
 The board at `/board?k=…` answers the pitch question — *التفاعل موجود، لكن كيف
 يتحول إلى قيمة؟* — with three beats: the engagement on the right, the question

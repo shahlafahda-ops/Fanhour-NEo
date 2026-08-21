@@ -12,7 +12,8 @@
     "test": "node --test test/*.test.js",
     "start": "node server/index.js",
     "demo": "FH_DEMO=1 node server/demo-seed.js",
-    "dev:demo": "FH_DEMO=1 node server/index.js"
+    "dev:demo": "FH_DEMO=1 node server/index.js",
+    "demo:start": "npm run build && node server/demo-start.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
