@@ -1,5 +1,5 @@
 {
-  "name": "fanhour-neom",
+  "name": "fanhour-alhazem-pilot",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -22,5 +22,6 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.2.0"
-  }
+  },
+  "description": "FanHour x Al Hazem Pilot 1 - Arabic-first RTL fan challenge, claim gate and merchant validator"
 }
