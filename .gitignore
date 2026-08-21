@@ -18,3 +18,7 @@ yarn-error.log*
 
 # Vite cache
 .vite/
+
+# Runtime data (SQLite) and test scratch
+data/
+.testdata-*/
