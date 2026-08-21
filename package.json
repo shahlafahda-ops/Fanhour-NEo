@@ -1,19 +1,30 @@
 {
-  "name": "fanhour-neom",
+  "name": "fanhour-alhazem-pilot",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:api": "node server/index.js",
+    "seed": "node server/seed.js",
+    "test": "node --test test/*.test.js",
+    "start": "node server/index.js",
+    "demo": "FH_DEMO=1 node server/demo-seed.js",
+    "dev:demo": "FH_DEMO=1 node server/index.js",
+    "demo:start": "npm run build && node server/demo-start.js"
   },
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.2.1",
+    "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.2.0"
-  }
+  },
+  "description": "FanHour x Al Hazem Pilot 1 - Arabic-first RTL fan challenge, claim gate and merchant validator"
 }
