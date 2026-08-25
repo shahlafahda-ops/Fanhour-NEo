@@ -1,0 +1,53 @@
+# Launch Checklist — Al Hazem Pilot 1
+
+Production is **not GO** until every required item is satisfied. Items marked
+🔴 are external dependencies FanHour must supply before launch; 🟢 are built and
+verified in this codebase.
+
+## Product & content
+- 🔴 Real Al Hazem fixtures entered with correct Riyadh kickoff times
+- 🔴 Approved FanHour brand assets + Al Hazem crest (currently neutral placeholders)
+- 🔴 Approved Privacy Policy copy (`/privacy` shows `REQUIRES_APPROVED_LEGAL_COPY`)
+- 🔴 Approved Platform Terms copy (`/terms` shows `REQUIRES_APPROVED_LEGAL_COPY`)
+- 🔴 Final campaign partner + campaign terms, cap, and expiry
+- 🔴 Benefit fulfilment confirmed with the merchant
+- 🟢 Fixture create/resolve workflow (ops)
+- 🟢 Campaign launch guard (regulated prizes blocked without legal approval)
+
+## Identity & security
+- 🔴 OTP provider credentials configured; `OTP_PROVIDER` ≠ `mock`
+- 🔴 Dedicated `HASH_PEPPER` secret set (not the service-role fallback)
+- 🟢 Secure OTP generation/hashing/rate-limiting
+- 🟢 Service role server-only; RLS default-deny on sensitive tables
+- 🟢 Ops RBAC + scoped merchant auth
+
+## Merchant fulfilment
+- 🔴 Merchant staff accounts created and access granted to the campaign
+- 🔴 Successful end-to-end merchant redemption test on production data
+- 🟢 Atomic single-use redemption + concurrency safety
+- 🟢 Merchant sees status only, never PII
+
+## Data & compliance
+- 🔴 `ALLOW_TEST_DATA=false` in production and DB contains no test rows
+- 🔴 Legal/compliance mode approved for the live campaign
+- 🟢 `assertProductionSafety()` guard (fails mock OTP / test data in prod)
+- 🟢 Consent versioning, data-minimisation copy, withdrawable marketing consent
+
+## Operational
+- 🔴 First `super_admin` ops account created and secured
+- 🔴 Support destination (`SUPPORT_DESTINATION`) configured
+- 🟢 Audit logging on sensitive mutations
+- 🟢 Analytics dashboard (MRAF/QMP + commercial funnel)
+
+## Engineering gates (verified in this build)
+- 🟢 `npm run typecheck` clean
+- 🟢 `npm run lint` clean
+- 🟢 `npm test` — 55/55 passing
+- 🟢 `npm run build` — succeeds (21 routes)
+- 🟡 `npm run test:e2e` — specs written; run against a live seeded environment
+
+## Recommendation
+**CONDITIONAL GO** — the software is production-quality and the required
+corrections are implemented and tested. Launch is gated on the 🔴 external
+items above (real fixtures, approved legal copy & assets, live OTP provider,
+signed campaign terms, merchant accounts, and a production DB free of test data).

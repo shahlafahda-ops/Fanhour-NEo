@@ -1,0 +1,101 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
+import { getAdminClient } from '@/lib/supabase/admin';
+import { requireOps, type OpsIdentity } from '@/lib/auth/guards';
+import { serverConfig, isTestDataAllowed } from '@/lib/config/env.server';
+
+async function audit(
+  actor: OpsIdentity,
+  action: string,
+  objectType: string,
+  objectId: string | null,
+  after: Record<string, unknown>,
+) {
+  const supabase = getAdminClient();
+  await supabase.from('audit_log').insert({
+    actor_id: actor.opsUserId,
+    actor_role: actor.role,
+    action,
+    object_type: objectType,
+    object_id: objectId,
+    after,
+  });
+}
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 40);
+}
+
+/** Create a fixture (prompt §33). Cutoff defaults to N minutes before kickoff. */
+export async function createFixture(formData: FormData) {
+  const actor = await requireOps(['super_admin', 'ops']);
+  const supabase = getAdminClient();
+
+  const opponent = String(formData.get('opponent') ?? '').trim();
+  const competition = String(formData.get('competition') ?? '').trim();
+  const hazemSide = String(formData.get('hazemSide') ?? 'home') as 'home' | 'away';
+  const kickoffLocal = String(formData.get('kickoff') ?? ''); // datetime-local (Riyadh)
+  if (!opponent || !competition || !kickoffLocal) {
+    throw new Error('missing_fields');
+  }
+
+  // Interpret the datetime-local input as Asia/Riyadh (UTC+3, no DST).
+  const kickoff = new Date(`${kickoffLocal}:00+03:00`);
+  const cutoff = new Date(kickoff.getTime() - serverConfig.defaultCutoffMinutes * 60_000);
+  const open = new Date(kickoff.getTime() - 3 * 24 * 60 * 60_000); // opens 3 days before
+
+  const { data: club } = await supabase.from('club').select('id').eq('slug', 'alhazem').single();
+  const baseSlug = slugify(`${opponent}-${kickoffLocal}`) || `fixture-${Date.now()}`;
+
+  const { data, error } = await supabase
+    .from('fixture')
+    .insert({
+      club_id: club!.id,
+      slug: baseSlug,
+      opponent_ar: opponent,
+      competition_ar: competition,
+      hazem_side: hazemSide,
+      kickoff_at: kickoff.toISOString(),
+      prediction_open_at: open.toISOString(),
+      cutoff_at: cutoff.toISOString(),
+      status: 'open',
+      is_test: isTestDataAllowed() ? String(formData.get('isTest')) === 'on' : false,
+    })
+    .select('id')
+    .single();
+
+  if (error) throw new Error(error.message);
+  await audit(actor, 'fixture.create', 'fixture', data.id as string, { opponent, competition });
+  revalidatePath('/ops/fixtures');
+  return;
+}
+
+/** Resolve a fixture and grade predictions idempotently (prompt §34). */
+export async function resolveFixture(formData: FormData) {
+  const actor = await requireOps(['super_admin', 'ops']);
+  const supabase = getAdminClient();
+
+  const fixtureId = String(formData.get('fixtureId') ?? '');
+  const hazemScore = Number(formData.get('hazemScore'));
+  const opponentScore = Number(formData.get('opponentScore'));
+  if (!fixtureId || !Number.isInteger(hazemScore) || !Number.isInteger(opponentScore)) {
+    throw new Error('invalid_scores');
+  }
+
+  const { error } = await supabase.rpc('resolve_fixture_atomic', {
+    p_fixture_id: fixtureId,
+    p_hazem_score: hazemScore,
+    p_opponent_score: opponentScore,
+  });
+  if (error) throw new Error(error.message);
+
+  await audit(actor, 'fixture.resolve', 'fixture', fixtureId, { hazemScore, opponentScore });
+  revalidatePath('/ops/fixtures');
+  revalidatePath('/app/alhazem');
+  return;
+}

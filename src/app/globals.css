@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: theme('colors.surface.base');
+  color: theme('colors.content.primary');
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Mobile-first canvas: centre a phone-width column on larger screens. */
+.app-shell {
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Respect reduced motion (prompt §61). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Visible keyboard focus for accessibility. */
+:focus-visible {
+  outline: 2px solid theme('colors.brand.green');
+  outline-offset: 2px;
+}
+
+/* Touch targets ≥ 44px by default for interactive controls. */
+button,
+[role='button'],
+a.btn {
+  min-height: 44px;
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg bg-surface-card2 border border-surface-border py-2.5 px-3 text-content-primary;
+  }
+}
