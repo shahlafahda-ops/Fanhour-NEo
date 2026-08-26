@@ -8,8 +8,10 @@
  */
 export const AR = {
   brand: {
-    fanhour: 'فان أور',
-    hazem: 'الحزم',
+    // Official Arabic wordmark spelling (Brand Manual §verbal identity).
+    fanhour: 'فان آور',
+    hazem: 'نادي الحزم',
+    hazemShort: 'الحزم',
     cross: '×',
   },
   fixture: {

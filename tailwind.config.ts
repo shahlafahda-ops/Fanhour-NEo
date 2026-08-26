@@ -11,35 +11,39 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // FanHour platform brand
+        // FanHour official core palette (Brand Manual v1.2 §C6).
         brand: {
-          green: '#00E676',
-          greenDim: 'rgba(0,230,118,0.14)',
-          purple: '#6515EE',
-          purpleDim: 'rgba(101,21,238,0.14)',
+          green: '#00E28A', // Emerald
+          greenDeep: '#009966',
+          greenDim: 'rgba(0,226,138,0.14)',
+          purple: '#A855FF', // Amethyst
+          purpleDeep: '#5B21B6',
+          purpleDim: 'rgba(168,85,255,0.14)',
         },
-        // Al Hazem contextual accent (club green/white — neutral placeholders,
-        // replace with approved club palette before launch).
+        // Al Hazem contextual accent — approved club gold (crest #FCBA13).
+        // Used only in club-specific zones; never alters the FanHour palette.
         hazem: {
-          primary: '#0B6E4F',
-          accent: '#F4F4F5',
+          primary: '#FCBA13',
+          accent: '#FFFFFF',
         },
+        // Midnight / Onyx product frame (§C6).
         surface: {
-          base: '#0A0A0F',
-          card: '#121218',
-          card2: '#181822',
-          border: '#242433',
+          base: '#0A0E1A', // Midnight
+          onyx: '#06070D', // Onyx
+          card: '#101522',
+          card2: '#151B2A',
+          border: '#2A3242',
         },
         content: {
           primary: '#FFFFFF',
-          secondary: '#B7B7C6',
-          muted: '#7A7A8C',
+          secondary: '#B8C2D1',
+          muted: '#5C6678',
         },
         state: {
-          success: '#00E676',
-          warn: '#FF9800',
-          danger: '#FF5470',
-          info: '#42A5F5',
+          success: '#00E28A',
+          warn: '#FFC857',
+          danger: '#FF6B6B',
+          info: '#56B4FF',
         },
       },
       fontFamily: {

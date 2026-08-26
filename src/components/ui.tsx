@@ -1,30 +1,31 @@
 import * as React from 'react';
 import { AR } from '@/lib/i18n/ar';
 
-/** FanHour × الحزم header. FanHour owns the digital experience (prompt §58). */
+/**
+ * FanHour × الحزم co-brand header. FanHour owns the digital experience and
+ * provides the Midnight product frame; the approved Al Hazem crest sits in the
+ * club-specific zone, used as supplied without recolouring (Brand Manual §D).
+ */
 export function BrandHeader({ testMode }: { testMode?: boolean }) {
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b border-surface-border">
-      <div className="flex items-center gap-2">
-        <span
-          className="text-lg font-bold tracking-tight bg-gradient-to-l from-brand-green to-brand-purple bg-clip-text text-transparent"
-          aria-label="FanHour"
-        >
-          {AR.brand.fanhour}
+    <header className="flex items-center justify-between px-4 py-3 border-b border-surface-border bg-surface-base">
+      <div className="flex items-center gap-2.5">
+        {/* FanHour mark + Arabic wordmark (approved) */}
+        <span className="flex items-center gap-1.5" aria-label="FanHour">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/fanhour-mark.png" alt="" aria-hidden width={26} height={26} className="h-[26px] w-auto" />
+          <span className="text-base font-bold tracking-tight text-content-primary">
+            {AR.brand.fanhour}
+          </span>
         </span>
-        <span aria-hidden className="text-content-muted">
+        <span aria-hidden className="text-content-muted text-sm">
           {AR.brand.cross}
         </span>
-        {/* Al Hazem crest placeholder — replace with approved club asset. */}
-        <span
-          className="inline-flex items-center gap-1.5 text-content-primary font-semibold"
-          aria-label="Al Hazem"
-        >
-          <span
-            aria-hidden
-            className="inline-block h-5 w-5 rounded-full bg-hazem-primary ring-1 ring-white/20"
-          />
-          {AR.brand.hazem}
+        {/* Al Hazem crest (approved club asset, unaltered) + name */}
+        <span className="flex items-center gap-1.5 text-content-primary font-semibold" aria-label="نادي الحزم">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/alhazem-crest.png" alt="" aria-hidden width={20} height={34} className="h-[30px] w-auto" />
+          <span className="text-sm">{AR.brand.hazemShort}</span>
         </span>
       </div>
       {testMode ? <TestBadge /> : null}

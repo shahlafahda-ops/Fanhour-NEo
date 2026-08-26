@@ -34,6 +34,14 @@ export function LoginForm({ title, portal }: { title: string; portal: 'ops' | 'm
           onSubmit={signIn}
           className="w-full rounded-card bg-surface-card border border-surface-border p-6 space-y-4"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/fanhour-mark.png"
+            alt="FanHour"
+            width={48}
+            height={48}
+            className="h-12 w-auto mx-auto"
+          />
           <h1 className="text-xl font-bold text-center">{title}</h1>
           <p className="text-center text-xs text-content-muted">
             {portal === 'ops' ? 'FanHour Operations' : 'FanHour Merchant'}

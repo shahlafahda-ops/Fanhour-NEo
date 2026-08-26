@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0A0A0F',
+  themeColor: '#0A0E1A', // Midnight (Brand Manual §C6)
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
