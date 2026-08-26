@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { getBrowserClient } from '@/lib/supabase/client';
+import { publicConfig } from '@/lib/config/env';
 
 /** Shared email/password sign-in for the ops and merchant portals. */
 export function LoginForm({ title, portal }: { title: string; portal: 'ops' | 'merchant' }) {
@@ -10,18 +11,30 @@ export function LoginForm({ title, portal }: { title: string; portal: 'ops' | 'm
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
+  // If the public Supabase config was not inlined at build time, sign-in can
+  // never work — surface that clearly instead of failing silently.
+  const configMissing = !publicConfig.supabaseUrl || !publicConfig.supabaseAnonKey;
+
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
     setBusy(true);
     setError(null);
     try {
+      if (configMissing) {
+        setError('التطبيق غير مُهيأ (إعدادات Supabase مفقودة). راجع متغيرات البيئة.');
+        return;
+      }
       const supabase = getBrowserClient();
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        setError('تعذّر تسجيل الدخول. تحقق من البيانات.');
+        // Show the real reason so misconfig vs wrong password is distinguishable.
+        setError(`تعذّر تسجيل الدخول: ${error.message}`);
         return;
       }
       window.location.reload();
+    } catch (err) {
+      setError(`خطأ غير متوقع: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setBusy(false);
     }
