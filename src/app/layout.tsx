@@ -1,14 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import { IBM_Plex_Sans_Arabic } from 'next/font/google';
 import './globals.css';
 import { publicConfig } from '@/lib/config/env';
 
-const arabic = IBM_Plex_Sans_Arabic({
-  subsets: ['arabic', 'latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-sans',
-  display: 'swap',
-});
+// IBM Plex Sans Arabic is self-hosted from /public/fonts (see globals.css);
+// there is no Google Fonts dependency at build or run time.
 
 export const metadata: Metadata = {
   metadataBase: new URL(publicConfig.appUrl),
@@ -32,7 +27,17 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={arabic.variable}>
+    <html lang="ar" dir="rtl">
+      <head>
+        {/* Preload the primary Arabic weight to avoid a flash of fallback text. */}
+        <link
+          rel="preload"
+          href="/fonts/ibm-plex-arabic-400.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
