@@ -1,70 +1,66 @@
-# FanHour × NEOM Club App
+# FanHour — Al Hazem Pilot 1
 
-The official digital fan engagement platform for NEOM FC — Saudi Pro League 2025/26.
+A lightweight Saudi football fan-engagement and sponsor-activation platform.
+FanHour attaches one fast, meaningful digital ritual to something supporters
+already care about: the next **Al Hazem** match.
+
+> The loop: **fixture → one-tap prediction → immediate feedback → the match →
+> resolution → personal record → optional sponsor benefit → verified
+> redemption → next fixture.**
+
+This repository is the production rebuild (mobile web, Arabic-first, true RTL).
+The earlier NEOM prototype is preserved under [`legacy/`](./legacy) for
+reference and is **not** authoritative.
 
 ## Stack
-- **React 18** + **Vite 5** (zero-config, fast HMR)
-- Zero external UI libraries — pure custom components
-- Fully responsive (mobile-first, desktop centered)
-- FanHour brand guidelines: Riyadh Emerald #00E676, Cyber Amethyst #6515EE
 
-## Quick Start (Local Dev)
+- **Next.js 14** (App Router) · **React 18** · **TypeScript (strict)**
+- **Tailwind CSS** — FanHour brand system, mobile-first, RTL
+- **Supabase** — PostgreSQL, Row Level Security, Auth, server functions
+- **Vitest** (unit/integration) · **Playwright** (E2E)
+- **Zod** for request validation
+
+## Quick start
 
 ```bash
+cp .env.example .env.local        # fill in Supabase + OTP config
 npm install
-npm run dev
-# → http://localhost:5173
+# apply migrations to your Supabase/Postgres (see docs/OPERATIONS.md)
+npm run seed                      # dev only — loads clearly-labelled TEST data
+npm run dev                       # http://localhost:3000  → /app/alhazem
 ```
 
-## Build for Production
+## Scripts
 
-```bash
-npm run build
-# Output: /dist folder (static files ready to deploy)
-```
+| Script | Purpose |
+|---|---|
+| `npm run dev` | Local dev server |
+| `npm run build` / `start` | Production build / serve |
+| `npm run typecheck` | `tsc --noEmit` (strict) |
+| `npm run lint` | ESLint (next/core-web-vitals) |
+| `npm test` | Vitest unit/integration suite |
+| `npm run test:e2e` | Playwright E2E (needs running app + seeded DB) |
+| `npm run seed` | Guarded dev seed (refuses in production) |
 
-## Deploy Options
+## Routes
 
-### Option 1: Vercel (Recommended — 30 seconds)
-1. Push to GitHub
-2. Go to https://vercel.com/new
-3. Import your repo → Click Deploy
-4. Done. Auto-deploys on every push.
+**Fan** `/app/alhazem` · `/pilot` (alias) · `/app/alhazem/match/[slug]` ·
+`/app/alhazem/record` · `/app/alhazem/benefit/[slug]`
+**Ops** `/ops` (RBAC) · **Merchant** `/merchant` (scoped auth)
+**Legal** `/privacy` · `/terms` · `/campaign-rules/[slug]`
 
-### Option 2: Netlify (Drag & Drop — 60 seconds)
-1. Run `npm run build`
-2. Go to https://app.netlify.com/drop
-3. Drag the `/dist` folder into the browser
-4. Done. Live URL instantly.
+## Documentation
 
-### Option 3: GitHub Pages
-```bash
-npm install --save-dev gh-pages
-# Add to package.json scripts: "deploy": "gh-pages -d dist"
-npm run build && npm run deploy
-```
+- [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
+- [Architecture](docs/ARCHITECTURE.md) · [Data model](docs/DATA_MODEL.md)
+- [Security](docs/SECURITY.md) · [Analytics](docs/ANALYTICS.md)
+- [Operations](docs/OPERATIONS.md) · [Testing](docs/TESTING.md)
+- [Legal configuration](docs/LEGAL_CONFIGURATION.md)
+- [Launch checklist](docs/LAUNCH_CHECKLIST.md) ← **GO/NO-GO gate**
 
-### Option 4: Any Static Host (S3, Azure Static, Firebase, etc.)
-Run `npm run build`, upload the `/dist` folder.
+## What FanHour is / is not
 
-## App Features
-
-| Screen    | Features |
-|-----------|----------|
-| 🏠 Hub     | Live countdown, KPI stats, season progress, Vision 2030 targets |
-| ⚡ Quest   | 8 daily quests with XP rewards, achievement badges, SVG progress ring |
-| 🏟 Matchday | Live score, check-in, AR Fan Cam, Halftime Treasure Hunt, live poll |
-| 🏪 Market  | SME marketplace, tier filtering, G-Formula revenue split |
-| 👤 Profile | Level progression, monthly XP chart, Wahdat NEOM leaderboard |
-
-## Key KPIs (From Strategy Docs)
-- +32% Match Attendance (stadium check-in bonuses)
-- +45% Merchandise Sales (points-to-purchase conversion)
-- 23% Fan Data Capture Rate (in-stadium activations)
-- SAR 275K–825K Year 1 SME Marketplace Revenue (NEOM Club 55% share)
-
-## Environment Variables (Future)
-```
-VITE_API_URL=https://api.fanhour.com
-VITE_CLUB_ID=neom-fc
-```
+FanHour is a fan-engagement and sponsor-activation platform. It is **not**
+betting, gambling, a lottery, a wallet, a bank, ticketing, e-commerce, a CRM,
+or a social network. There are no daily streaks, no global leaderboards, no
+token economy, and no other clubs.

@@ -1,0 +1,9 @@
+# Netlify configuration for the FanHour Next.js app.
+# Next.js outputs to `.next` (NOT `dist`). The official Next.js Runtime plugin
+# wires up SSR/API routes and sets the publish directory automatically.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

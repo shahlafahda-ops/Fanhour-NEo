@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =====================================================================
+ * Self-hosted IBM Plex Sans Arabic (SIL OFL 1.1). Files live in
+ * /public/fonts so there is no build-time or runtime Google Fonts fetch.
+ * Arabic + Latin subsets are split by unicode-range so each viewer only
+ * downloads the glyphs the page actually uses.
+ * ===================================================================== */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-arabic-400.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1,
+    U+08E3-08FF, U+FB50-FDFF, U+FE70-FEFF, U+102E0-102FB, U+10E60-10E7E, U+10EFD-10EFF,
+    U+1EC71-1ECB4, U+1ED01-1ED3D, U+1EE00-1EEBB;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-arabic-500.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1,
+    U+08E3-08FF, U+FB50-FDFF, U+FE70-FEFF, U+102E0-102FB, U+10E60-10E7E, U+10EFD-10EFF,
+    U+1EC71-1ECB4, U+1ED01-1ED3D, U+1EE00-1EEBB;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-arabic-600.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1,
+    U+08E3-08FF, U+FB50-FDFF, U+FE70-FEFF, U+102E0-102FB, U+10E60-10E7E, U+10EFD-10EFF,
+    U+1EC71-1ECB4, U+1ED01-1ED3D, U+1EE00-1EEBB;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-arabic-700.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1,
+    U+08E3-08FF, U+FB50-FDFF, U+FE70-FEFF, U+102E0-102FB, U+10E60-10E7E, U+10EFD-10EFF,
+    U+1EC71-1ECB4, U+1ED01-1ED3D, U+1EE00-1EEBB;
+}
+/* Latin text uses Inter (Brand Manual §C8: "Inter, Arial or approved geometric
+ * sans" for Latin; IBM Plex Sans Arabic for Arabic). Both self-hosted. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-latin-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/inter-latin-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter-latin-600.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: dark;
+  /* Consumed by tailwind.config.ts (fontFamily.sans) and body. Arabic glyphs
+   * resolve to IBM Plex Sans Arabic; Latin glyphs fall through to Inter. */
+  --font-sans: 'IBM Plex Sans Arabic', 'Inter';
+}
+
+html,
+body {
+  background: theme('colors.surface.base');
+  color: theme('colors.content.primary');
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Mobile-first canvas: centre a phone-width column on larger screens. */
+.app-shell {
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Respect reduced motion (prompt §61). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Visible keyboard focus for accessibility. */
+:focus-visible {
+  outline: 2px solid theme('colors.brand.green');
+  outline-offset: 2px;
+}
+
+/* Touch targets ≥ 44px by default for interactive controls. */
+button,
+[role='button'],
+a.btn {
+  min-height: 44px;
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg bg-surface-card2 border border-surface-border py-2.5 px-3 text-content-primary;
+  }
+}

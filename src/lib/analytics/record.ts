@@ -1,0 +1,32 @@
+import 'server-only';
+import { getAdminClient, hasSupabase } from '@/lib/supabase/admin';
+import { isTestDataAllowed } from '@/lib/config/env.server';
+import { sanitizeProps, type AnalyticsEvent } from './events';
+
+/**
+ * Authoritative server-side event recorder. Analytics must never block a
+ * supporter action, so failures are swallowed (logged, not thrown) — see
+ * prompt §62.
+ */
+export async function recordEvent(evt: AnalyticsEvent): Promise<void> {
+  if (!hasSupabase()) return;
+  try {
+    const supabase = getAdminClient();
+    await supabase.from('event').insert({
+      name: evt.name,
+      anonymous_session_id: evt.anonymousSessionId ?? null,
+      supporter_id: evt.supporterId ?? null,
+      fixture_id: evt.fixtureId ?? null,
+      campaign_id: evt.campaignId ?? null,
+      sponsor_id: evt.sponsorId ?? null,
+      merchant_id: evt.merchantId ?? null,
+      merchant_location_id: evt.merchantLocationId ?? null,
+      source: evt.source ?? null,
+      props: sanitizeProps(evt.props),
+      is_test: isTestDataAllowed(),
+    });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('[analytics] failed to record event', evt.name, err);
+  }
+}

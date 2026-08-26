@@ -1,0 +1,7 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "ignorePatterns": ["legacy/**", "supabase/**", "tests/e2e/**"],
+  "rules": {
+    "@next/next/no-img-element": "off"
+  }
+}
