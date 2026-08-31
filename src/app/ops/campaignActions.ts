@@ -6,6 +6,18 @@ import { requireOps } from '@/lib/auth/guards';
 import { isTestDataAllowed } from '@/lib/config/env.server';
 import { campaignCanGoLive } from '@/lib/domain/eligibility';
 import type { ComplianceMode } from '@/lib/domain/types';
+import { opsFail } from '@/lib/ops/formError';
+
+const PATH = '/ops/campaigns';
+
+const MISSING_FIELD_AR: Record<string, string> = {
+  fixture: 'المباراة',
+  sponsor: 'الشريك',
+  benefit_description: 'وصف المنفعة',
+  terms: 'الشروط',
+  expiry: 'تاريخ الانتهاء',
+  legal_approval: 'الموافقة القانونية',
+};
 
 function slugify(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40);
@@ -17,13 +29,13 @@ export async function createSponsor(formData: FormData) {
   const name = String(formData.get('name') ?? '').trim();
   const commercialType = String(formData.get('commercialType') ?? 'paid');
   const logoUrl = String(formData.get('logoUrl') ?? '').trim();
-  if (!name) throw new Error('missing_name');
+  if (!name) opsFail(PATH, 'اسم الشريك مطلوب');
   const { data, error } = await supabase
     .from('sponsor')
     .insert({ name_ar: name, commercial_type: commercialType, logo_url: logoUrl || null })
     .select('id')
     .single();
-  if (error) throw new Error(error.message);
+  if (error) opsFail(PATH, error.message);
   await supabase.from('audit_log').insert({
     actor_id: actor.opsUserId,
     actor_role: actor.role,
@@ -51,7 +63,7 @@ export async function createCampaign(formData: FormData) {
   const issueCapRaw = String(formData.get('issueCap') ?? '');
   const expires = String(formData.get('expires') ?? '');
 
-  if (!title || !sponsorId) throw new Error('missing_fields');
+  if (!title || !sponsorId) opsFail(PATH, 'العنوان والشريك مطلوبان');
 
   const { data, error } = await supabase
     .from('campaign')
@@ -72,7 +84,7 @@ export async function createCampaign(formData: FormData) {
     })
     .select('id')
     .single();
-  if (error) throw new Error(error.message);
+  if (error) opsFail(PATH, error.message);
   await supabase.from('audit_log').insert({
     actor_id: actor.opsUserId,
     actor_role: actor.role,
@@ -93,7 +105,7 @@ export async function setCampaignActive(formData: FormData) {
   const activate = String(formData.get('activate')) === 'true';
 
   const { data: c } = await supabase.from('campaign').select('*').eq('id', campaignId).single();
-  if (!c) throw new Error('not_found');
+  if (!c) opsFail(PATH, 'لم يتم العثور على الحملة');
 
   if (activate) {
     const check = campaignCanGoLive({
@@ -106,14 +118,17 @@ export async function setCampaignActive(formData: FormData) {
       hasExpiry: Boolean(c.expires_at),
       issueCap: c.issue_cap,
     });
-    if (!check.canGoLive) throw new Error(`missing:${check.missing.join(',')}`);
+    if (!check.canGoLive) {
+      const missingAr = check.missing.map((m) => MISSING_FIELD_AR[m] ?? m).join('، ');
+      opsFail(PATH, `لا يمكن التفعيل — الحقول الناقصة: ${missingAr}`);
+    }
   }
 
   const { error } = await supabase
     .from('campaign')
     .update({ is_active: activate, updated_at: new Date().toISOString() })
     .eq('id', campaignId);
-  if (error) throw new Error(error.message);
+  if (error) opsFail(PATH, error.message);
 
   await supabase.from('audit_log').insert({
     actor_id: actor.opsUserId,

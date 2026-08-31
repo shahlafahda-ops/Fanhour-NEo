@@ -4,6 +4,9 @@ import { revalidatePath } from 'next/cache';
 import { getAdminClient } from '@/lib/supabase/admin';
 import { requireOps, type OpsIdentity } from '@/lib/auth/guards';
 import { serverConfig, isTestDataAllowed } from '@/lib/config/env.server';
+import { opsFail } from '@/lib/ops/formError';
+
+const PATH = '/ops/fixtures';
 
 async function audit(
   actor: OpsIdentity,
@@ -41,7 +44,7 @@ export async function createFixture(formData: FormData) {
   const hazemSide = String(formData.get('hazemSide') ?? 'home') as 'home' | 'away';
   const kickoffLocal = String(formData.get('kickoff') ?? ''); // datetime-local (Riyadh)
   if (!opponent || !competition || !kickoffLocal) {
-    throw new Error('missing_fields');
+    opsFail(PATH, 'يرجى تعبئة الخصم والبطولة وموعد المباراة');
   }
 
   // Interpret the datetime-local input as Asia/Riyadh (UTC+3, no DST).
@@ -69,7 +72,7 @@ export async function createFixture(formData: FormData) {
     .select('id')
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) opsFail(PATH, error.message);
   await audit(actor, 'fixture.create', 'fixture', data.id as string, { opponent, competition });
   revalidatePath('/ops/fixtures');
   return;
@@ -84,7 +87,7 @@ export async function resolveFixture(formData: FormData) {
   const hazemScore = Number(formData.get('hazemScore'));
   const opponentScore = Number(formData.get('opponentScore'));
   if (!fixtureId || !Number.isInteger(hazemScore) || !Number.isInteger(opponentScore)) {
-    throw new Error('invalid_scores');
+    opsFail(PATH, 'يرجى إدخال نتيجة صحيحة لكلا الفريقين');
   }
 
   const { error } = await supabase.rpc('resolve_fixture_atomic', {
@@ -92,7 +95,7 @@ export async function resolveFixture(formData: FormData) {
     p_hazem_score: hazemScore,
     p_opponent_score: opponentScore,
   });
-  if (error) throw new Error(error.message);
+  if (error) opsFail(PATH, error.message);
 
   await audit(actor, 'fixture.resolve', 'fixture', fixtureId, { hazemScore, opponentScore });
   revalidatePath('/ops/fixtures');

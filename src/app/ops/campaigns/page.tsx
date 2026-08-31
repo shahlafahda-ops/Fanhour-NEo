@@ -4,7 +4,11 @@ import { createSponsor, createCampaign, setCampaignActive } from '@/app/ops/camp
 
 export const dynamic = 'force-dynamic';
 
-export default async function OpsCampaignsPage() {
+export default async function OpsCampaignsPage({
+  searchParams,
+}: {
+  searchParams?: { error?: string };
+}) {
   await requireOps(['super_admin', 'ops']);
   const supabase = getAdminClient();
   const [{ data: sponsors }, { data: fixtures }, { data: campaigns }] = await Promise.all([
@@ -18,6 +22,15 @@ export default async function OpsCampaignsPage() {
 
   return (
     <div className="space-y-6">
+      {searchParams?.error && (
+        <div
+          role="alert"
+          className="rounded-card bg-state-danger/15 border border-state-danger text-state-danger p-3 text-sm"
+        >
+          {searchParams.error}
+        </div>
+      )}
+
       <section className="rounded-card bg-surface-card border border-surface-border p-4">
         <h2 className="font-semibold mb-3">إضافة شريك</h2>
         <form action={createSponsor} className="grid gap-3">
