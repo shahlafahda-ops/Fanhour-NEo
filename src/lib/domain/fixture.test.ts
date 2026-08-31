@@ -5,6 +5,7 @@ import {
   resultFromScores,
   resultFromVenueScores,
   isPredictionCorrect,
+  selectActiveFixture,
 } from './fixture';
 import type { FixtureTimes } from './types';
 
@@ -56,5 +57,65 @@ describe('result computation', () => {
   it('grades predictions', () => {
     expect(isPredictionCorrect('hazem_win', 'hazem_win')).toBe(true);
     expect(isPredictionCorrect('draw', 'hazem_win')).toBe(false);
+  });
+});
+
+describe('selectActiveFixture (soonest-kickoff bug regression)', () => {
+  const t = (kickoffIso: string, cutoffOffsetMin = -5) => {
+    const kickoffAt = new Date(kickoffIso);
+    return {
+      predictionOpenAt: new Date(kickoffAt.getTime() - 3 * 24 * 60 * 60 * 1000),
+      cutoffAt: new Date(kickoffAt.getTime() + cutoffOffsetMin * 60 * 1000),
+      kickoffAt,
+    };
+  };
+  const now = new Date('2026-08-31T12:00:00Z');
+
+  it('reproduces the reported bug: a stale unresolved fixture must NOT bury a real upcoming one', () => {
+    // Stray test fixture: kickoff was days ago, ops never resolved it — stored
+    // status is still "open", but its real-time window has long closed.
+    const staleTest = { id: 'stale', status: 'open' as const, kickoff: '2026-08-26T16:39:00Z' };
+    // Real upcoming fixture, later kickoff, but genuinely still open right now.
+    const realUpcoming = { id: 'real', status: 'open' as const, kickoff: '2026-08-30T20:00:00Z' };
+
+    const times = (row: typeof staleTest) => t(row.kickoff);
+    const winner = selectActiveFixture([staleTest, realUpcoming], times, now);
+
+    // OLD (buggy) behaviour would sort by kickoff ascending and return `stale`.
+    expect(winner?.id).toBe('real');
+  });
+
+  it('prefers an open fixture over a locked one', () => {
+    const locked = { id: 'locked', status: 'locked' as const, kickoff: '2026-08-31T10:00:00Z' };
+    // predictionOpenAt = kickoff - 3 days, so `now` (Aug 31) must fall within
+    // 3 days of this kickoff for the fixture to be effectively "open".
+    const open = { id: 'open', status: 'open' as const, kickoff: '2026-09-01T18:00:00Z' };
+    const winner = selectActiveFixture([locked, open], (r) => t(r.kickoff), now);
+    expect(winner?.id).toBe('open');
+  });
+
+  it('with no open fixture, picks the MOST RECENT locked one (current match), not an old one', () => {
+    const oldLocked = { id: 'old', status: 'locked' as const, kickoff: '2026-08-20T18:00:00Z' };
+    const currentLocked = { id: 'current', status: 'locked' as const, kickoff: '2026-08-31T11:00:00Z' };
+    const winner = selectActiveFixture([oldLocked, currentLocked], (r) => t(r.kickoff), now);
+    expect(winner?.id).toBe('current');
+  });
+
+  it('falls back to the soonest scheduled fixture when nothing is open or locked', () => {
+    const later = { id: 'later', status: 'scheduled' as const, kickoff: '2026-09-10T18:00:00Z' };
+    const sooner = { id: 'sooner', status: 'scheduled' as const, kickoff: '2026-09-05T18:00:00Z' };
+    const winner = selectActiveFixture([later, sooner], (r) => t(r.kickoff), now);
+    expect(winner?.id).toBe('sooner');
+  });
+
+  it('returns null with no candidates (caller falls back to most recently resolved)', () => {
+    expect(selectActiveFixture([], () => t('2026-08-31T18:00:00Z'), now)).toBeNull();
+  });
+
+  it('ignores a resolved fixture even if it is technically in the candidate set', () => {
+    const resolved = { id: 'resolved', status: 'resolved' as const, kickoff: '2026-08-31T10:00:00Z' };
+    const open = { id: 'open', status: 'open' as const, kickoff: '2026-09-05T18:00:00Z' };
+    const winner = selectActiveFixture([resolved, open], (r) => t(r.kickoff), now);
+    expect(winner?.id).toBe('open');
   });
 });
