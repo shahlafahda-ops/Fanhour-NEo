@@ -20,6 +20,7 @@ export interface CampaignRow {
   benefitAr: string | null;
   descriptionAr: string | null;
   termsAr: string | null;
+  imageUrl: string | null;
   eligibilityMode: CampaignEligibilityMode;
   revealTiming: BenefitRevealTiming;
   complianceMode: ComplianceMode;
@@ -44,6 +45,7 @@ function mapRow(r: Record<string, unknown>): CampaignRow {
     benefitAr: (r.benefit_ar as string) ?? null,
     descriptionAr: (r.description_ar as string) ?? null,
     termsAr: (r.terms_ar as string) ?? null,
+    imageUrl: (r.image_url as string) ?? null,
     eligibilityMode: r.eligibility_mode as CampaignEligibilityMode,
     revealTiming: r.reveal_timing as BenefitRevealTiming,
     complianceMode: r.compliance_mode as ComplianceMode,

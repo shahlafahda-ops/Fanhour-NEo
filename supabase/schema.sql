@@ -1,6 +1,6 @@
 -- =====================================================================
 -- FanHour — FULL SCHEMA (paste once into the Supabase SQL Editor).
--- Concatenation of supabase/migrations/0001..0006 in order.
+-- Concatenation of supabase/migrations/0001..0007 in order.
 -- Supabase already provides the auth schema and auth.uid(), so no stub
 -- is needed here. Safe to run once on a fresh project.
 -- =====================================================================
@@ -145,7 +145,6 @@ create table prediction_change (
 
 comment on table prediction is
   'Qualified core prediction. QMP counts DISTINCT fixtures here, never edits.';
-
 
 -- >>> supabase/migrations/0002_commercial_schema.sql
 -- =====================================================================
@@ -351,7 +350,6 @@ create table distribution_touchpoint (
   created_at timestamptz not null default now()
 );
 
-
 -- >>> supabase/migrations/0003_otp_and_functions.sql
 -- =====================================================================
 -- FanHour — OTP challenges + concurrency-safe server functions.
@@ -546,7 +544,6 @@ begin
 end;
 $$;
 
-
 -- >>> supabase/migrations/0004_rls.sql
 -- =====================================================================
 -- FanHour — Row Level Security.
@@ -660,7 +657,6 @@ create policy merchant_read_own_merchant on merchant for select
 -- anon/authenticated roles. They are therefore default-DENY and reachable only
 -- via the service role in trusted server code. This is intentional.
 
-
 -- >>> supabase/migrations/0005_base_data.sql
 -- =====================================================================
 -- FanHour — Base (non-test) production data.
@@ -688,7 +684,6 @@ insert into feature_flag (key, enabled, value) values
   ('matchweek_status', false, null)
 on conflict (key) do nothing;
 
-
 -- >>> supabase/migrations/0006_retention_flags.sql
 -- =====================================================================
 -- FanHour — Pilot 1 retention / status / commentary layer.
@@ -711,3 +706,7 @@ insert into feature_flag (key, enabled, value) values
   ('post_match_poll', false, null)
 on conflict (key) do nothing;
 
+-- >>> supabase/migrations/0007_campaign_image.sql
+-- Campaign benefit image (prize photo). Mirrors the existing sponsor.logo_url
+-- column: nullable, purely presentational, never used for eligibility.
+alter table campaign add column image_url text;
