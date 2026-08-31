@@ -58,9 +58,24 @@ npm run dev                       # http://localhost:3000  → /app/alhazem
 - [Legal configuration](docs/LEGAL_CONFIGURATION.md)
 - [Launch checklist](docs/LAUNCH_CHECKLIST.md) ← **GO/NO-GO gate**
 
+## Supporter status (Pilot 1)
+
+`متابع → مشجع → محلل خبير → محلل مخضرم → أسطورة` at **0 / 60 / 150 / 260 / 380 XP**
+(participation +10 · correct outcome +20 · exact score +20).
+
+XP is **not a currency**: it cannot be bought, redeemed or transferred, and it
+never affects sponsor-benefit eligibility. Attendance alone caps a supporter at
+مشجع — the higher ranks must be earned with prediction accuracy.
+
+Football-commentary phrases (`بالمليمتر يا حبيبي!`, `يا رباه!`, `عيني عيني!`) are
+transient contextual microcopy, **not** badges or rewards. See
+[ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## What FanHour is / is not
 
 FanHour is a fan-engagement and sponsor-activation platform. It is **not**
 betting, gambling, a lottery, a wallet, a bank, ticketing, e-commerce, a CRM,
-or a social network. There are no daily streaks, no global leaderboards, no
-token economy, and no other clubs.
+or a social network. Explicit Pilot 1 exclusions: **no daily login streak** (streaks are per fixture),
+**no all-time global leaderboard**, no wallet, no virtual currency, no chance
+mechanics (spin/raffle/scratch), no paid participation or boosts, no social feed
+or comments, no native app, no profile badge collection, and no other clubs.

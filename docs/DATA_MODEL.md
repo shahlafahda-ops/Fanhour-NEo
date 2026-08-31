@@ -58,3 +58,29 @@ one claim per supporter per campaign. Status ∈ {issued, redeemed, expired, voi
 Cap enforcement, single-use redemption, prediction/claim uniqueness, and the
 regulated-prize guard were exercised against a real Postgres 16 instance during
 build (see docs/TESTING.md → "DB invariant checks").
+
+## Pilot 1 status layer — derived, never persisted
+
+XP, rank, fixture streak, lifecycle state, exact-score correctness and
+commentary reactions add **no tables and no columns**. They are recomputed at
+read time from the authoritative `prediction` + `fixture` rows.
+
+Rationale: persisting them would create a second source of truth that silently
+diverges the moment ops corrects a score (`resolve_fixture_atomic` re-grades
+`is_correct`) or an anonymous session merges into a supporter. Deriving keeps
+the status layer self-healing.
+
+- **Exact-score correctness** compares `prediction.exact_hazem_score` /
+  `exact_opponent_score` against `fixture.hazem_score` / `opponent_score`.
+  `resolve_fixture_atomic` grades the outcome only; it needs no change.
+- **Rank movement** is derived by recomputing XP with the current fixture
+  excluded — no "previous rank" column is required.
+- **Repetition suppression** reads prior `commentary_reaction_shown` events.
+
+`0006_retention_flags.sql` therefore only registers two feature-flag rows.
+
+### Identity-aware reads
+`getSupporterRecord()` matches on **both** `supporter_id` and
+`anonymous_session_id` (`identityOrFilter`). Reading by anonymous session alone
+would make XP and rank appear to reset after OTP verification or on a second
+device.

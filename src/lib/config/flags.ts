@@ -15,7 +15,9 @@ export type FlagKey =
   | 'benefit_reveal_timing'
   | 'notification_timing'
   | 'cohort_status'
-  | 'matchweek_status';
+  | 'matchweek_status'
+  | 'commentary_reactions'
+  | 'post_match_poll';
 
 export interface FlagState {
   enabled: boolean;
@@ -35,6 +37,11 @@ export const FLAG_DEFAULTS: Record<FlagKey, FlagState> = {
   notification_timing: { enabled: false },
   cohort_status: { enabled: false },
   matchweek_status: { enabled: false },
+  // Football-commentary microcopy. ON for Pilot 1: it is expression only and
+  // never affects XP, rank or sponsor-benefit eligibility.
+  commentary_reactions: { enabled: true },
+  // Deferred to P1 — no poll surface is built in Pilot 1 P0.
+  post_match_poll: { enabled: false },
 };
 
 export function resolveFlags(rows: { key: string; enabled: boolean; value: unknown }[]): Record<

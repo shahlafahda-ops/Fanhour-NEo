@@ -122,3 +122,32 @@ describe('campaignCanGoLive', () => {
     expect(r.missing).toEqual(expect.arrayContaining(['fixture', 'terms']));
   });
 });
+
+/**
+ * Guard: FanHour football status and commercial value are separate systems.
+ * XP or rank must never leak into benefit eligibility.
+ */
+describe('status and sponsor benefits stay strictly separate', () => {
+  it('eligibility accepts no XP or rank input at all', () => {
+    const supporterKeys = Object.keys(eligibleSupporter);
+    expect(supporterKeys).toEqual(
+      expect.not.arrayContaining(['xp', 'rank', 'rankKey', 'level', 'streak']),
+    );
+    const campaignKeys = Object.keys(baseCampaign);
+    expect(campaignKeys).toEqual(
+      expect.not.arrayContaining(['minXp', 'minRank', 'requiredRank']),
+    );
+  });
+
+  it('gives the same verdict regardless of any status-shaped extra fields', () => {
+    const withStatus = {
+      ...eligibleSupporter,
+      // deliberately smuggled in — must be ignored
+      xp: 0, rank: 'متابع', streak: 0,
+    } as unknown as SupporterEligibilityContext;
+    const a = evaluateEligibility(baseCampaign, eligibleSupporter, { regulatedPrizeApproved: false });
+    const b = evaluateEligibility(baseCampaign, withStatus, { regulatedPrizeApproved: false });
+    expect(b).toEqual(a);
+    expect(b.eligible).toBe(true);
+  });
+});

@@ -36,11 +36,6 @@ export const AR = {
     optionalDepthHint: 'اختياري تمامًا — لا يؤثر على مشاركتك أو أي منفعة.',
     saveScore: 'حفظ النتيجة المتوقعة',
   },
-  community: {
-    tooEarly: 'التوقعات ما زالت في بدايتها لهذه المباراة.',
-    hazemPct: (p: number) => `${p}٪ من المشاركين يتوقعون فوز الحزم`,
-    heading: 'ماذا يتوقع الجمهور؟',
-  },
   result: {
     heading: 'نتيجة المباراة',
     yourPrediction: 'توقعك',
@@ -89,6 +84,44 @@ export const AR = {
   },
   privacy: {
     beforePhone: 'لا نطلب منك اسمًا أو رقم جوال لتسجيل توقعك.',
+  },
+  status: {
+    heading: 'مستواي',
+    rank: 'رتبتي',
+    xp: 'نقاط',
+    xpShort: (n: number) => `${n} نقطة`,
+    toNextRank: (n: number, rank: string) => `باقي ${n} نقطة للوصول إلى ${rank}`,
+    highestRank: 'وصلت إلى أعلى رتبة',
+    streak: 'سلسلة المشاركة',
+    streakMatches: (n: number) => `${n} مباريات متتالية`,
+    streakOne: 'مباراة واحدة',
+    bestStreak: 'أطول سلسلة',
+    // The rank ladder itself lives in domain/progression.ts (approved names).
+    explainer: 'رتبتك تعكس مشاركتك ودقة توقعاتك — لا علاقة لها بمزايا الشركاء.',
+  },
+  skill: {
+    heading: 'مستواي الكروي',
+    accuracy: 'دقة التوقع',
+    correct: 'توقعات صحيحة',
+    graded: 'مباريات محسوبة',
+    exactHits: 'نتائج مضبوطة',
+    xpEarned: (n: number) => `+${n} نقطة`,
+  },
+  community: {
+    tooEarly: 'التوقعات ما زالت في بدايتها لهذه المباراة.',
+    hazemPct: (p: number) => `${p}٪ من المشاركين يتوقعون فوز الحزم`,
+    heading: 'ماذا يتوقع الجمهور؟',
+    withMajority: 'أنت مع الأغلبية',
+    balanced: 'الجمهور منقسم على هذه المباراة',
+    minority: (p: number) => `توقعك مختلف عن أغلب الجمهور — ${p}٪ فقط معك`,
+    strongMinority: (p: number) => `بس ${p}٪ اختاروا نفس توقعك`,
+  },
+  commentary: {
+    belMillimeter: (pred: string, actual: string) => `توقعت ${pred} وانتهت ${actual}.`,
+    yaRabaahRare: (p: number) => `بس ${p}٪ من الجمهور اختاروا نفس توقعك.`,
+    yaRabaahCorrect: (p: number) => `${p}٪ فقط توقعوا مثلك — وطلعت صح.`,
+    ayniAyniRank: (rank: string) => `وصلت إلى ${rank}.`,
+    ayniAyniRun: (c: number, w: number) => `${c} توقعات صحيحة من آخر ${w} مباريات.`,
   },
   common: {
     loading: 'جارٍ التحميل…',

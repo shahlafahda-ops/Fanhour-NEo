@@ -129,3 +129,35 @@ export async function getCommunityCounts(fixtureId: string) {
   }
   return counts;
 }
+
+export interface FixtureTimelineRow {
+  id: string;
+  kickoffAt: string;
+  cutoffAt: string;
+  status: FixtureStatus;
+  hazemScore: number | null;
+  opponentScore: number | null;
+}
+
+/**
+ * Chronological list of pilot fixtures used to build participation streaks and
+ * lifecycle timelines. Excludes test fixtures in production.
+ */
+export async function getFixtureTimeline(): Promise<FixtureTimelineRow[]> {
+  if (!hasSupabase()) return [];
+  const supabase = getAdminClient();
+  let q = supabase
+    .from('fixture')
+    .select('id, kickoff_at, cutoff_at, status, hazem_score, opponent_score')
+    .order('kickoff_at', { ascending: true });
+  if (!isTestDataAllowed()) q = q.eq('is_test', false);
+  const { data } = await q;
+  return ((data as Record<string, unknown>[]) ?? []).map((r) => ({
+    id: r.id as string,
+    kickoffAt: r.kickoff_at as string,
+    cutoffAt: r.cutoff_at as string,
+    status: r.status as FixtureStatus,
+    hazemScore: (r.hazem_score as number) ?? null,
+    opponentScore: (r.opponent_score as number) ?? null,
+  }));
+}

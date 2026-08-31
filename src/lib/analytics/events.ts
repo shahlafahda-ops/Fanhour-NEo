@@ -37,6 +37,16 @@ export const EVENTS = {
   support_requested: 'support_requested',
   consent_given: 'consent_given',
   consent_withdrawn: 'consent_withdrawn',
+  // --- Pilot 1 retention / status / commentary layer ---
+  /** First qualified prediction by a first-time supporter (time-to-first-value). */
+  first_value_reached: 'first_value_reached',
+  /** Supporter returned after a fixture resolved and saw their outcome. */
+  first_resolution_viewed: 'first_resolution_viewed',
+  status_viewed: 'status_viewed',
+  rank_advanced: 'rank_advanced',
+  fixture_streak_viewed: 'fixture_streak_viewed',
+  matchweek_status_viewed: 'matchweek_status_viewed',
+  commentary_reaction_shown: 'commentary_reaction_shown',
 } as const;
 
 export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
@@ -53,6 +63,9 @@ export const SERVER_AUTHORITATIVE: ReadonlySet<EventName> = new Set<EventName>([
   EVENTS.redemption_failed,
   EVENTS.consent_given,
   EVENTS.consent_withdrawn,
+  EVENTS.first_value_reached,
+  EVENTS.rank_advanced,
+  EVENTS.commentary_reaction_shown,
 ]);
 
 /** Keys that must NEVER appear in event properties. */

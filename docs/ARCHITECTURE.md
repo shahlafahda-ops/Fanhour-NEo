@@ -52,3 +52,45 @@ the header reads **فان أور × الحزم**. FanHour green `#00E676` and pu
 DB-backed (`feature_flag`) with safe code defaults (`src/lib/config/flags.ts`).
 `cohort_status`/`matchweek_status` ship OFF. Global leaderboard and daily streak
 do not exist in the codebase.
+
+## Status, streak and commentary (Pilot 1 retention layer)
+
+Four pure domain modules, all unit-tested and free of framework code:
+
+| Module | Responsibility |
+|---|---|
+| `domain/progression.ts` | XP table, rank ladder, progress, rank advancement |
+| `domain/streak.ts` | Fixture participation streaks (never daily streaks) |
+| `domain/lifecycle.ts` | Transparent rule-based segmentation (internal Ops only) |
+| `domain/commentary.ts` | Deterministic commentary reaction selection |
+
+### The rank ladder
+`متابع → مشجع → محلل خبير → محلل مخضرم → أسطورة` at **0 / 60 / 150 / 260 / 380
+XP**. XP: participation +10, correct outcome +20, exact score +20 (max 50 per
+fixture). Calibrated for ~11–12 usable fixtures in the 90-day window.
+
+Deliberate property: **participation alone caps a supporter at مشجع**
+(12 × 10 = 120 < 150). محلل خبير and above must be earned with prediction
+accuracy, so the ladder reads as football credibility rather than attendance.
+All values live in one place and are documented for post-pilot rebalancing.
+
+### Commentary reactions are microcopy, not badges
+They are transient contextual reactions — **not** badges, achievements,
+collectibles, trophies, inventory or unlockables. They carry **no XP, no rank
+effect and no sponsor-benefit implication**.
+
+`evaluateCommentaryReaction(context)` returns at most **one** reaction or
+`null`. Priority: exact score → rarity → admiration. Community-based reactions
+require a real sample (`hasEnoughSample`); rarity is never fabricated. Phrases
+that could recur (`يا رباه!`, `عيني عيني!`) are suppressed back-to-back.
+
+**Deferred in Pilot 1:** `يوززززززع!` needs a genuine distribution/share
+interaction and `الضربة القاضية ممكن!` needs a decisive late-match context.
+Neither exists in a pre-match-only pilot, so both are flagged unavailable rather
+than forced — no mechanic was invented to accommodate a phrase.
+
+### Two value systems, kept apart
+FanHour **status** is earned through participation and prediction skill.
+**Sponsor benefits** are partner-provided value. XP never influences
+`evaluateEligibility`, and no XP is awarded for claiming, redeeming, spending or
+registering. A unit test guards this separation.
