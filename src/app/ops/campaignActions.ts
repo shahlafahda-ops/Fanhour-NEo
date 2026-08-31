@@ -16,10 +16,11 @@ export async function createSponsor(formData: FormData) {
   const supabase = getAdminClient();
   const name = String(formData.get('name') ?? '').trim();
   const commercialType = String(formData.get('commercialType') ?? 'paid');
+  const logoUrl = String(formData.get('logoUrl') ?? '').trim();
   if (!name) throw new Error('missing_name');
   const { data, error } = await supabase
     .from('sponsor')
-    .insert({ name_ar: name, commercial_type: commercialType })
+    .insert({ name_ar: name, commercial_type: commercialType, logo_url: logoUrl || null })
     .select('id')
     .single();
   if (error) throw new Error(error.message);
@@ -44,6 +45,7 @@ export async function createCampaign(formData: FormData) {
   const fixtureId = String(formData.get('fixtureId') ?? '') || null;
   const benefit = String(formData.get('benefit') ?? '').trim();
   const terms = String(formData.get('terms') ?? '').trim();
+  const imageUrl = String(formData.get('imageUrl') ?? '').trim();
   const complianceMode = String(formData.get('complianceMode') ?? 'participation_benefit') as ComplianceMode;
   const revealTiming = String(formData.get('revealTiming') ?? 'post_result');
   const issueCapRaw = String(formData.get('issueCap') ?? '');
@@ -60,6 +62,7 @@ export async function createCampaign(formData: FormData) {
       title_ar: title,
       benefit_ar: benefit || null,
       terms_ar: terms || null,
+      image_url: imageUrl || null,
       compliance_mode: complianceMode,
       reveal_timing: revealTiming,
       issue_cap: issueCapRaw ? Number(issueCapRaw) : null,

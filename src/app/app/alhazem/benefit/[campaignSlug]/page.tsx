@@ -58,10 +58,12 @@ async function ClaimSection({
       data={{
         campaignSlug,
         sponsorNameAr: campaign.sponsorNameAr,
+        sponsorLogoUrl: campaign.sponsorLogoUrl,
         titleAr: campaign.titleAr,
         benefitAr: campaign.benefitAr,
         descriptionAr: campaign.descriptionAr,
         termsAr: campaign.termsAr,
+        imageUrl: campaign.imageUrl,
         validityLabel: campaign.expiresAt ? formatRiyadhDate(campaign.expiresAt) : null,
         alreadyVerified: supporter.isVerified,
         appUrl: publicConfig.appUrl,

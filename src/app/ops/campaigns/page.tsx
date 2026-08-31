@@ -28,6 +28,7 @@ export default async function OpsCampaignsPage() {
             <option value="subsidized">مدعوم</option>
             <option value="merchant_only">شريك استلام فقط</option>
           </select>
+          <input name="logoUrl" placeholder="رابط شعار الشريك (اختياري)" className="input" dir="ltr" />
           <button className="rounded-card bg-surface-card2 border border-surface-border py-2.5 font-semibold">
             حفظ الشريك
           </button>
@@ -55,6 +56,7 @@ export default async function OpsCampaignsPage() {
             ))}
           </select>
           <input name="benefit" placeholder="المنفعة" className="input" />
+          <input name="imageUrl" placeholder="رابط صورة الجائزة/المنفعة (اختياري)" className="input" dir="ltr" />
           <textarea name="terms" placeholder="الشروط" className="input" rows={2} />
           <select name="complianceMode" className="input">
             <option value="participation_benefit">منفعة مشاركة (بدون جائزة)</option>

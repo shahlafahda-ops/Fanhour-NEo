@@ -8,10 +8,12 @@ import { Card, PrimaryButton } from '@/components/ui';
 export interface BenefitClaimData {
   campaignSlug: string;
   sponsorNameAr: string;
+  sponsorLogoUrl: string | null;
   titleAr: string;
   benefitAr: string | null;
   descriptionAr: string | null;
   termsAr: string | null;
+  imageUrl: string | null;
   validityLabel: string | null;
   alreadyVerified: boolean;
   appUrl: string;
@@ -118,8 +120,26 @@ export function BenefitClaim({ data }: { data: BenefitClaimData }) {
   return (
     <div className="space-y-5">
       <Card className="space-y-2 text-center">
+        {data.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={data.imageUrl}
+            alt={data.benefitAr ?? data.titleAr}
+            className="mx-auto rounded-lg bg-white object-contain max-h-48"
+          />
+        )}
         <div className="text-xs text-content-muted">{AR.benefit.fromPartner}</div>
-        <div className="text-lg font-bold">{data.sponsorNameAr}</div>
+        <div className="flex items-center justify-center gap-2">
+          {data.sponsorLogoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={data.sponsorLogoUrl}
+              alt={data.sponsorNameAr}
+              className="h-8 w-8 rounded-full bg-white object-contain p-0.5"
+            />
+          )}
+          <div className="text-lg font-bold">{data.sponsorNameAr}</div>
+        </div>
         <div className="text-content-primary">{data.benefitAr ?? data.titleAr}</div>
         {data.descriptionAr && (
           <p className="text-sm text-content-secondary">{data.descriptionAr}</p>
