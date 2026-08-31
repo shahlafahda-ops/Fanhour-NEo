@@ -46,6 +46,15 @@ verified in this codebase.
 - 🟢 `npm run build` — succeeds (21 routes)
 - 🟡 `npm run test:e2e` — specs written; run against a live seeded environment
 
+## Pilot 1 retention layer
+- 🟢 XP, rank ladder, fixture streak, enhanced record page
+- 🟢 Commentary reaction engine (`commentary_reactions` ON; two phrases deferred)
+- 🟢 Resolved-match progression screen
+- 🟢 Lifecycle segmentation + Ops status/retention/commentary panels
+- 🔴 Review rank thresholds against live data after ~4 fixtures and rebalance
+- 🔴 Recruit the four research cohorts in [PILOT_RESEARCH.md](./PILOT_RESEARCH.md)
+- 🟡 Confirm commentary fires sensibly via the Ops diagnostic counts (not a KPI)
+
 ## Recommendation
 **CONDITIONAL GO** — the software is production-quality and the required
 corrections are implemented and tested. Launch is gated on the 🔴 external

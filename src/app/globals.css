@@ -148,3 +148,8 @@ a.btn {
     @apply w-full rounded-lg bg-surface-card2 border border-surface-border py-2.5 px-3 text-content-primary;
   }
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}

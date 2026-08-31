@@ -12,8 +12,10 @@ import { isPredictionEditable } from '@/lib/domain/fixture';
 import { computeCommunityDistribution } from '@/lib/domain/community';
 import { getCommunityCounts } from '@/lib/data/fixtures';
 import { publicConfig } from '@/lib/config/env';
-import { recordEvent } from '@/lib/analytics/record';
+import { recordEvent, recordEventOnce } from '@/lib/analytics/record';
 import { EVENTS } from '@/lib/analytics/events';
+import { evaluateCommentaryReaction } from '@/lib/domain/commentary';
+import { getFlags } from '@/lib/data/flags';
 
 const Body = z.object({
   fixtureId: z.string().uuid(),
@@ -95,10 +97,49 @@ export async function POST(req: Request) {
   const counts = await getCommunityCounts(fixture.id);
   const dist = computeCommunityDistribution(counts, publicConfig.communityMinSample);
 
+  // Time-to-first-value: fires once, the first time this identity completes a
+  // qualified prediction in any fixture. Paired with `fixture_viewed` (also
+  // server-timestamped) this yields a trustworthy median.
+  const { count: distinctFixtures } = await supabase
+    .from('prediction')
+    .select('fixture_id', { head: true, count: 'exact' })
+    .eq('anonymous_session_id', anonId);
+  if ((distinctFixtures ?? 0) <= 1) {
+    await recordEventOnce({
+      name: EVENTS.first_value_reached,
+      anonymousSessionId: anonId,
+      fixtureId: fixture.id,
+      source: 'web',
+    });
+  }
+
+  // Commentary is expression only — evaluated AFTER the write, never blocking it.
+  const flags = await getFlags();
+  const chosenSharePct = dist.percentages ? dist.percentages[parsed.outcome] : null;
+  const reaction = flags.commentary_reactions.enabled
+    ? evaluateCommentaryReaction({
+        moment: 'post_submission',
+        community: { hasEnoughSample: dist.hasEnoughSample, chosenSharePct },
+      })
+    : null;
+  if (reaction) {
+    await recordEvent({
+      name: EVENTS.commentary_reaction_shown,
+      anonymousSessionId: anonId,
+      fixtureId: fixture.id,
+      props: { reaction_key: reaction.reactionKey, reason: reaction.reason },
+    });
+  }
+
   const res = NextResponse.json({
     ok: true,
     outcome: parsed.outcome,
-    community: { hasEnoughSample: dist.hasEnoughSample, percentages: dist.percentages },
+    community: {
+      hasEnoughSample: dist.hasEnoughSample,
+      percentages: dist.percentages,
+      chosenSharePct,
+    },
+    reaction,
   });
   if (isNew) {
     const opts = anonymousCookieOptions();

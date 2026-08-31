@@ -30,3 +30,30 @@ export async function recordEvent(evt: AnalyticsEvent): Promise<void> {
     console.error('[analytics] failed to record event', evt.name, err);
   }
 }
+
+/**
+ * Record an event at most once per (name, identity, fixture).
+ *
+ * Server-rendered pages re-run on every refresh; without this guard a simple
+ * page reload would inflate view metrics and corrupt time-to-first-value.
+ */
+export async function recordEventOnce(
+  evt: AnalyticsEvent & { fixtureId?: string | null },
+): Promise<void> {
+  if (!hasSupabase()) return;
+  try {
+    const supabase = getAdminClient();
+    let q = supabase.from('event').select('id', { head: true, count: 'exact' }).eq('name', evt.name);
+    if (evt.supporterId) q = q.eq('supporter_id', evt.supporterId);
+    else if (evt.anonymousSessionId) q = q.eq('anonymous_session_id', evt.anonymousSessionId);
+    else return;
+    if (evt.fixtureId) q = q.eq('fixture_id', evt.fixtureId);
+
+    const { count } = await q;
+    if ((count ?? 0) > 0) return;
+    await recordEvent(evt);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('[analytics] recordEventOnce failed', evt.name, err);
+  }
+}

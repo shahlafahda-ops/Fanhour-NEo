@@ -4,6 +4,8 @@ import * as React from 'react';
 import { AR } from '@/lib/i18n/ar';
 import { Card, PrimaryButton } from '@/components/ui';
 import type { PredictionOutcome } from '@/lib/domain/types';
+import { CommentaryBanner } from '@/components/CommentaryBanner';
+import { classifyRarity, type CommentaryReaction } from '@/lib/domain/commentary';
 
 export interface FixtureViewData {
   fixtureId: string;
@@ -21,6 +23,7 @@ export interface FixtureViewData {
 interface CommunityResult {
   hasEnoughSample: boolean;
   percentages: Record<PredictionOutcome, number> | null;
+  chosenSharePct?: number | null;
 }
 
 const CHOICES: { key: PredictionOutcome; label: (opp: string) => string }[] = [
@@ -34,6 +37,7 @@ export function FixtureView({ data }: { data: FixtureViewData }) {
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [community, setCommunity] = React.useState<CommunityResult | null>(null);
+  const [reaction, setReaction] = React.useState<CommentaryReaction | null>(null);
   const editable = data.effectiveStatus === 'open';
 
   async function submit(choice: PredictionOutcome) {
@@ -49,10 +53,15 @@ export function FixtureView({ data }: { data: FixtureViewData }) {
         body: JSON.stringify({ fixtureId: data.fixtureId, outcome: choice }),
       });
       if (!res.ok) throw new Error('submit_failed');
-      const json = (await res.json()) as { community: CommunityResult | null };
+      const json = (await res.json()) as {
+        community: CommunityResult | null;
+        reaction: CommentaryReaction | null;
+      };
       if (json.community) setCommunity(json.community);
+      setReaction(json.reaction ?? null);
     } catch {
       setOutcome(previous);
+      setReaction(null);
       setError(AR.prediction.submitError);
     } finally {
       setSubmitting(false);
@@ -126,6 +135,8 @@ export function FixtureView({ data }: { data: FixtureViewData }) {
         </p>
       )}
 
+      <CommentaryBanner reaction={reaction} />
+
       {data.communityEnabled && community && (
         <CommunityFeedback community={community} opponentAr={data.opponentAr} />
       )}
@@ -160,6 +171,7 @@ function CommunityFeedback({
   return (
     <Card className="space-y-3">
       <h3 className="text-sm font-semibold text-content-secondary">{AR.community.heading}</h3>
+      <CommunityInterpretation sharePct={community.chosenSharePct ?? null} />
       {rows.map((r) => (
         <div key={r.label}>
           <div className="flex justify-between text-sm mb-1">
@@ -177,6 +189,24 @@ function CommunityFeedback({
       ))}
     </Card>
   );
+}
+
+/**
+ * One plain-language reading of where the supporter sits. The catchphrase layer
+ * handles genuinely rare calls; this stays neutral so it can always be shown.
+ */
+function CommunityInterpretation({ sharePct }: { sharePct: number | null }) {
+  if (sharePct === null) return null;
+  const band = classifyRarity(sharePct);
+  const text =
+    band === 'majority'
+      ? AR.community.withMajority
+      : band === 'balanced'
+        ? AR.community.balanced
+        : band === 'minority'
+          ? AR.community.minority(sharePct)
+          : AR.community.strongMinority(sharePct);
+  return <p className="text-sm text-content-secondary text-center pb-1">{text}</p>;
 }
 
 function OptionalDepth({ fixtureId, opponentAr }: { fixtureId: string; opponentAr: string }) {

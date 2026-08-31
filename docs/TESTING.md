@@ -12,6 +12,10 @@ Pure domain logic, framework-free. Current suite: **55 tests, all passing**.
 | `domain/community.test.ts` | min-sample honesty, sums to 100 |
 | `security/security.test.ts` | OTP valid/wrong/expired/replay/resend, tokens, phone E.164 |
 | `analytics/events.test.ts` | PII stripping, server-authoritative set |
+| `domain/progression.test.ts` | XP values, rank boundaries/advancement, highest rank, Pilot-1 progression curve |
+| `domain/streak.test.ts` | current/best fixture streak, cancelled + unavailable + still-open fixtures |
+| `domain/lifecycle.test.ts` | NEW→ACTIVATED→ENGAGED→POWER_FAN→AT_RISK transitions and recovery |
+| `domain/commentary.test.ts` | reaction selection, priority ladder, suppression, no-reaction cases, deferred phrases |
 | `config/env.test.ts` | production safety guards |
 
 ## DB invariant checks (Postgres)
@@ -25,7 +29,11 @@ your own harness.
 
 ## End-to-end (Playwright) — `npm run test:e2e`
 Specs in `tests/e2e` cover the fan journey (land → predict → record), portal
-authentication walls (ops/merchant show login, leak no data), and legal pages.
+authentication walls (ops/merchant show login, leak no data), legal pages, and
+the retention layer (`retention-layer.spec.ts`): the zero-setup first
+prediction, community feedback appearing only after submission, the status
+layer on the record page, the resolved-fixture sequence, the one-phrase rule,
+and the guarantee that deferred phrases never appear.
 
 **Prerequisites:** a running app (`npm run build && npm start`) pointed at a
 Supabase project with `npm run seed` loaded, and `E2E_BASE_URL` set. Chromium is
