@@ -2,7 +2,7 @@ import 'server-only';
 import { getAdminClient, hasSupabase } from '@/lib/supabase/admin';
 import { isTestDataAllowed } from '@/lib/config/env.server';
 import type { FixtureStatus, FixtureResult, HomeAway } from '@/lib/domain/types';
-import { effectiveFixtureStatus } from '@/lib/domain/fixture';
+import { effectiveFixtureStatus, selectActiveFixture } from '@/lib/domain/fixture';
 
 export interface FixtureRow {
   id: string;
@@ -62,20 +62,34 @@ export function fixtureEffectiveStatus(r: FixtureRow, now = new Date()): Fixture
  * or upcoming; falls back to the most recently resolved one so returning fans
  * see their result.
  */
+/**
+ * The soonest genuinely OPEN fixture, or the most recent LOCKED one (in
+ * progress / awaiting resolution), or the soonest SCHEDULED one — decided by
+ * TIME-DERIVED effective status via `selectActiveFixture`, never by raw
+ * kickoff-ascending order alone. A stale fixture whose window has elapsed but
+ * that ops never resolved/cancelled must not bury a genuinely upcoming one
+ * just because its kickoff happens to be earlier.
+ */
 export async function getActiveFixture(): Promise<FixtureRow | null> {
   if (!hasSupabase()) return null;
   const supabase = getAdminClient();
   const testOnlyFalse = testFilter();
 
+  // Bounded candidate set: Pilot 1 never has more than a handful of
+  // simultaneously non-resolved fixtures, so a small window is sufficient and
+  // keeps this a single query rather than fetching the whole table.
   let upcoming = supabase
     .from('fixture')
     .select('*')
     .in('status', ['scheduled', 'open', 'locked'])
     .order('kickoff_at', { ascending: true })
-    .limit(1);
+    .limit(25);
   if (testOnlyFalse === false) upcoming = upcoming.eq('is_test', false);
   const { data: up } = await upcoming;
-  if (up && up.length > 0) return mapRow(up[0] as Record<string, unknown>);
+
+  const candidates = ((up as Record<string, unknown>[]) ?? []).map(mapRow);
+  const chosen = selectActiveFixture(candidates, fixtureTimes, new Date());
+  if (chosen) return chosen;
 
   let recent = supabase
     .from('fixture')
