@@ -43,8 +43,12 @@ export async function createFixture(formData: FormData) {
   const competition = String(formData.get('competition') ?? '').trim();
   const hazemSide = String(formData.get('hazemSide') ?? 'home') as 'home' | 'away';
   const kickoffLocal = String(formData.get('kickoff') ?? ''); // datetime-local (Riyadh)
+  const plannedTouchpoints = formData.getAll('plannedTouchpoints').map(String);
   if (!opponent || !competition || !kickoffLocal) {
     opsFail(PATH, 'يرجى تعبئة الخصم والبطولة وموعد المباراة');
+  }
+  if (plannedTouchpoints.length === 0) {
+    opsFail(PATH, 'يرجى اختيار قناة توزيع مخططة واحدة على الأقل');
   }
 
   // Interpret the datetime-local input as Asia/Riyadh (UTC+3, no DST).
@@ -73,6 +77,15 @@ export async function createFixture(formData: FormData) {
     .single();
 
   if (error) opsFail(PATH, error.message);
+
+  await supabase.from('distribution_touchpoint').insert(
+    plannedTouchpoints.map((channel) => ({
+      fixture_id: data.id,
+      channel,
+      status: 'scheduled',
+    })),
+  );
+
   await audit(actor, 'fixture.create', 'fixture', data.id as string, { opponent, competition });
   revalidatePath('/ops/fixtures');
   return;
@@ -86,8 +99,18 @@ export async function resolveFixture(formData: FormData) {
   const fixtureId = String(formData.get('fixtureId') ?? '');
   const hazemScore = Number(formData.get('hazemScore'));
   const opponentScore = Number(formData.get('opponentScore'));
+  const deliveredTouchpoints = formData.getAll('deliveredTouchpoints').map(String);
   if (!fixtureId || !Number.isInteger(hazemScore) || !Number.isInteger(opponentScore)) {
     opsFail(PATH, 'يرجى إدخال نتيجة صحيحة لكلا الفريقين');
+  }
+  // Only fixtures with PLANNED touchpoints require a delivered confirmation —
+  // a fixture predating this feature (no planned rows) has nothing to confirm.
+  const { count: plannedCount } = await supabase
+    .from('distribution_touchpoint')
+    .select('id', { head: true, count: 'exact' })
+    .eq('fixture_id', fixtureId);
+  if ((plannedCount ?? 0) > 0 && deliveredTouchpoints.length === 0) {
+    opsFail(PATH, 'يرجى تأكيد قنوات التوزيع التي نُفّذت فعليًا (أو تحديد أن لا شيء نُفّذ)');
   }
 
   const { error } = await supabase.rpc('resolve_fixture_atomic', {
@@ -96,6 +119,32 @@ export async function resolveFixture(formData: FormData) {
     p_opponent_score: opponentScore,
   });
   if (error) opsFail(PATH, error.message);
+
+  const deliveredChannels = deliveredTouchpoints.filter((c) => c !== 'none');
+  if (deliveredChannels.length > 0) {
+    await supabase
+      .from('distribution_touchpoint')
+      .update({ status: 'delivered' })
+      .eq('fixture_id', fixtureId)
+      .in('channel', deliveredChannels);
+  }
+
+  // A5 — measured ops effort, optional per field.
+  const minutes = (key: string): number | null => {
+    const raw = String(formData.get(key) ?? '').trim();
+    if (!raw) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? n : null;
+  };
+  await supabase
+    .from('fixture')
+    .update({
+      minutes_question_set: minutes('minutesQuestionSet'),
+      minutes_verification: minutes('minutesVerification'),
+      minutes_resolution: minutes('minutesResolution'),
+      minutes_sponsor_reporting: minutes('minutesSponsorReporting'),
+    })
+    .eq('id', fixtureId);
 
   await audit(actor, 'fixture.resolve', 'fixture', fixtureId, { hazemScore, opponentScore });
   revalidatePath('/ops/fixtures');

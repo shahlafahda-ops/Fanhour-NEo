@@ -7,10 +7,22 @@ import {
   getSupporterState,
   getSupporterQualifiedFixtureIds,
 } from '@/lib/identity/supporter';
-import { evaluateEligibility } from '@/lib/domain/eligibility';
+import { evaluateEligibility, type EligibilityReason } from '@/lib/domain/eligibility';
 import { generateRedemptionToken, hashRedemptionToken, generateFallbackCode } from '@/lib/security/tokens';
 import { recordEvent } from '@/lib/analytics/record';
 import { EVENTS } from '@/lib/analytics/events';
+
+/**
+ * A3: machine reason codes for `benefit_blocked`, so ops can see WHY a
+ * claim was blocked (e.g. the 18+ age gate) instead of it reading as silent
+ * disinterest. No PII — just the reason.
+ */
+const BLOCKED_REASON_CODE: Partial<Record<EligibilityReason, string>> = {
+  age_requirement_not_met: 'age',
+  locality_not_eligible: 'locality',
+  no_qualifying_participation: 'no_participation',
+  campaign_inactive: 'campaign_inactive',
+};
 
 const Body = z.object({
   campaignSlug: z.string().min(1),
@@ -98,6 +110,12 @@ export async function POST(req: Request) {
   );
 
   if (!eligibility.eligible) {
+    await recordEvent({
+      name: EVENTS.benefit_blocked,
+      supporterId: supporter.supporterId,
+      campaignId: campaign.id,
+      props: { reason: BLOCKED_REASON_CODE[eligibility.reason] ?? eligibility.reason },
+    });
     return NextResponse.json({ error: 'not_eligible', reason: eligibility.reason }, { status: 403 });
   }
 
@@ -118,6 +136,12 @@ export async function POST(req: Request) {
 
   if (error) {
     if (error.message.includes('cap_reached')) {
+      await recordEvent({
+        name: EVENTS.benefit_blocked,
+        supporterId: supporter.supporterId,
+        campaignId: campaign.id,
+        props: { reason: 'cap_reached' },
+      });
       return NextResponse.json({ error: 'cap_reached' }, { status: 409 });
     }
     // Unique (campaign, supporter) => already claimed. Surface existing.

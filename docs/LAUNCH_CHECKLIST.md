@@ -16,6 +16,8 @@ verified in this codebase.
 
 ## Identity & security
 - 🔴 OTP provider credentials configured; `OTP_PROVIDER` ≠ `mock`
+- 🔴 Notify provider credentials configured; `NOTIFY_PROVIDER` ≠ `mock` (reminders are otherwise inert)
+- 🔴 `CRON_SECRET` set and an external scheduler (Netlify Scheduled Function, cron-job.org, …) calls `POST /api/cron/reminders` every 15–30 min
 - 🔴 Dedicated `HASH_PEPPER` secret set (not the service-role fallback)
 - 🟢 Secure OTP generation/hashing/rate-limiting
 - 🟢 Service role server-only; RLS default-deny on sensitive tables
@@ -42,8 +44,8 @@ verified in this codebase.
 ## Engineering gates (verified in this build)
 - 🟢 `npm run typecheck` clean
 - 🟢 `npm run lint` clean
-- 🟢 `npm test` — 55/55 passing
-- 🟢 `npm run build` — succeeds (21 routes)
+- 🟢 `npm test` — 191/191 passing
+- 🟢 `npm run build` — succeeds (28 routes)
 - 🟡 `npm run test:e2e` — specs written; run against a live seeded environment
 
 ## Pilot 1 retention layer
@@ -54,6 +56,15 @@ verified in this codebase.
 - 🔴 Review rank thresholds against live data after ~4 fixtures and rebalance
 - 🔴 Recruit the four research cohorts in [PILOT_RESEARCH.md](./PILOT_RESEARCH.md)
 - 🟡 Confirm commentary fires sensibly via the Ops diagnostic counts (not a KPI)
+
+## Part A — pilot measurement layer
+- 🟢 Matchweek reminders + randomised 80/20 treatment/holdout (`notification_timing` ON by default; inert without `NOTIFY_PROVIDER` + `CRON_SECRET` + an external scheduler)
+- 🟢 `?src=` acquisition attribution + planned/delivered club touchpoints per fixture
+- 🟢 Honest commercial funnel (eligible population as the claim-rate denominator) + `benefit_blocked` reason codes
+- 🟢 Verified Reach Index (VRI) + merchant first-visit tap + `/ops/sponsor-report/[campaignSlug]`
+- 🟢 Measured per-fixture ops effort (question set / verification / resolution / sponsor reporting minutes)
+- 🟢 XP/rank thresholds tunable via `feature_flag.progression_config` — no deploy needed to rebalance
+- 🔴 Recruit ~30+ reminder subscribers per arm before reading the treatment-vs-holdout MRAF split (see Ops dashboard's "sample too small" flag)
 
 ## Recommendation
 **CONDITIONAL GO** — the software is production-quality and the required

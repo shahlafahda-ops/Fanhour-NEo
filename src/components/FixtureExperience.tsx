@@ -17,7 +17,9 @@ import { getSupporterRecord } from '@/lib/data/record';
 import { StatusCard } from '@/components/StatusCard';
 import { CommentaryBanner } from '@/components/CommentaryBanner';
 import { evaluateCommentaryReaction } from '@/lib/domain/commentary';
-import { computeXp, resolveRank, didRankAdvance } from '@/lib/domain/progression';
+import {
+  computeXp, resolveRank, didRankAdvance, parseProgressionConfig,
+} from '@/lib/domain/progression';
 import { recordEventOnce } from '@/lib/analytics/record';
 import { EVENTS } from '@/lib/analytics/events';
 import { resolveCurrentIdentity } from '@/lib/identity/current';
@@ -161,6 +163,9 @@ async function ResolvedView({
   const identity = await resolveCurrentIdentity();
   const entry = record.entries.find((e) => e.fixtureId === fixture.id) ?? null;
 
+  const flags = await getFlags();
+  const progressionConfig = parseProgressionConfig(flags.progression_config.value);
+
   // Rank movement is derived, not persisted: recompute XP without this fixture.
   const xpAfter = record.xp;
   const xpBefore = computeXp(
@@ -171,8 +176,9 @@ async function ResolvedView({
         isCorrect: e.isCorrect,
         isExactCorrect: e.isExactCorrect,
       })),
+    progressionConfig,
   );
-  const advanced = didRankAdvance(xpBefore, xpAfter);
+  const advanced = didRankAdvance(xpBefore, xpAfter, progressionConfig);
 
   // Community standing of the supporter's own selection.
   const counts = await getCommunityCounts(fixture.id);
@@ -192,7 +198,7 @@ async function ResolvedView({
       recentWindow: recentGraded.length,
       gradedCount: record.gradedCount,
     },
-    rankAdvancedToAr: advanced ? resolveRank(xpAfter).rank.nameAr : null,
+    rankAdvancedToAr: advanced ? resolveRank(xpAfter, progressionConfig).rank.nameAr : null,
   });
 
   // Enrich the exact-score reaction with the two scorelines it talks about.
@@ -228,7 +234,7 @@ async function ResolvedView({
       anonymousSessionId: identity.anonymousSessionId,
       supporterId: identity.supporterId,
       fixtureId: fixture.id,
-      props: { rank: resolveRank(xpAfter).rank.key },
+      props: { rank: resolveRank(xpAfter, progressionConfig).rank.key },
     });
   }
 

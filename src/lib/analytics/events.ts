@@ -47,6 +47,11 @@ export const EVENTS = {
   fixture_streak_viewed: 'fixture_streak_viewed',
   matchweek_status_viewed: 'matchweek_status_viewed',
   commentary_reaction_shown: 'commentary_reaction_shown',
+  // --- A1: matchweek reminders + randomised holdout ---
+  reminder_consent_given: 'reminder_consent_given',
+  reminder_consent_withdrawn: 'reminder_consent_withdrawn',
+  // --- A3: honest eligibility funnel ---
+  benefit_blocked: 'benefit_blocked',
 } as const;
 
 export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
@@ -66,6 +71,11 @@ export const SERVER_AUTHORITATIVE: ReadonlySet<EventName> = new Set<EventName>([
   EVENTS.first_value_reached,
   EVENTS.rank_advanced,
   EVENTS.commentary_reaction_shown,
+  EVENTS.notification_sent,
+  EVENTS.notification_opened,
+  EVENTS.reminder_consent_given,
+  EVENTS.reminder_consent_withdrawn,
+  EVENTS.benefit_blocked,
 ]);
 
 /** Keys that must NEVER appear in event properties. */

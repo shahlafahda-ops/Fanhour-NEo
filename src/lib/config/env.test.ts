@@ -25,10 +25,20 @@ describe('production safety guards', () => {
     expect(errors.some((e) => e.includes('ALLOW_TEST_DATA'))).toBe(true);
   });
 
+  it('rejects mock notify provider in production', async () => {
+    const env = await loadEnv({
+      NEXT_PUBLIC_APP_ENV: 'production',
+      NOTIFY_PROVIDER: 'mock',
+    });
+    const errors = env.assertProductionSafety();
+    expect(errors.some((e) => e.includes('NOTIFY_PROVIDER=mock'))).toBe(true);
+  });
+
   it('passes with a valid production configuration', async () => {
     const env = await loadEnv({
       NEXT_PUBLIC_APP_ENV: 'production',
       OTP_PROVIDER: 'twilio',
+      NOTIFY_PROVIDER: 'unifonic',
       ALLOW_TEST_DATA: 'false',
       NEXT_PUBLIC_SUPABASE_URL: 'https://x.supabase.co',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: 'anon',

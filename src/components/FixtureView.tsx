@@ -6,6 +6,7 @@ import { Card, PrimaryButton } from '@/components/ui';
 import type { PredictionOutcome } from '@/lib/domain/types';
 import { CommentaryBanner } from '@/components/CommentaryBanner';
 import { classifyRarity, type CommentaryReaction } from '@/lib/domain/commentary';
+import { ReminderOptIn } from '@/components/ReminderOptIn';
 
 export interface FixtureViewData {
   fixtureId: string;
@@ -38,6 +39,7 @@ export function FixtureView({ data }: { data: FixtureViewData }) {
   const [error, setError] = React.useState<string | null>(null);
   const [community, setCommunity] = React.useState<CommunityResult | null>(null);
   const [reaction, setReaction] = React.useState<CommentaryReaction | null>(null);
+  const [showReminderOptIn, setShowReminderOptIn] = React.useState(false);
   const editable = data.effectiveStatus === 'open';
 
   async function submit(choice: PredictionOutcome) {
@@ -56,9 +58,11 @@ export function FixtureView({ data }: { data: FixtureViewData }) {
       const json = (await res.json()) as {
         community: CommunityResult | null;
         reaction: CommentaryReaction | null;
+        showReminderOptIn?: boolean;
       };
       if (json.community) setCommunity(json.community);
       setReaction(json.reaction ?? null);
+      if (json.showReminderOptIn) setShowReminderOptIn(true);
     } catch {
       setOutcome(previous);
       setReaction(null);
@@ -144,6 +148,8 @@ export function FixtureView({ data }: { data: FixtureViewData }) {
       {data.optionalDepthEnabled && outcome && editable && (
         <OptionalDepth fixtureId={data.fixtureId} opponentAr={data.opponentAr} />
       )}
+
+      {showReminderOptIn && <ReminderOptIn />}
     </section>
   );
 }

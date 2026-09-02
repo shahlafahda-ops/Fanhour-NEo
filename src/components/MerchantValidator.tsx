@@ -2,11 +2,13 @@
 
 import * as React from 'react';
 import { getBrowserClient } from '@/lib/supabase/client';
+import { AR } from '@/lib/i18n/ar';
 
 interface LookupResult {
   outcome: string;
   statusAr: string;
   campaignId: string | null;
+  claimId?: string | null;
 }
 
 const VALID_PREVIEW = 'redeemed';
@@ -135,6 +137,9 @@ export function MerchantValidator({ displayName }: { displayName: string | null 
         {confirmedResult && (
           <div className="rounded-card bg-surface-card border border-surface-border p-6 space-y-4 text-center">
             <StatusBadge outcome={confirmedResult.outcome} statusAr={confirmedResult.statusAr} big />
+            {confirmedResult.outcome === VALID_PREVIEW && confirmedResult.claimId && (
+              <FirstVisitTap claimId={confirmedResult.claimId} />
+            )}
             <button
               onClick={reset}
               className="w-full rounded-card bg-brand-green text-surface-base font-bold py-3"
@@ -144,6 +149,54 @@ export function MerchantValidator({ displayName }: { displayName: string | null 
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+/** A4 — one optional, skippable, no-PII tap. Never blocks the merchant flow. */
+function FirstVisitTap({ claimId }: { claimId: string }) {
+  const [answered, setAnswered] = React.useState(false);
+
+  async function answer(firstVisit: 'yes' | 'no' | 'unsure') {
+    setAnswered(true); // optimistic — this is diagnostic data, never worth blocking on
+    try {
+      await fetch('/api/merchant/first-visit', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ claimId, firstVisit }),
+      });
+    } catch {
+      // best-effort; nothing for the merchant to retry
+    }
+  }
+
+  if (answered) {
+    return <p className="text-content-muted text-sm">{AR.merchantFirstVisit.thanks}</p>;
+  }
+
+  return (
+    <div className="space-y-2">
+      <p className="text-content-secondary text-sm">{AR.merchantFirstVisit.question}</p>
+      <div className="flex gap-2 justify-center">
+        <button
+          onClick={() => answer('yes')}
+          className="rounded-card border border-surface-border px-4 py-2 text-sm"
+        >
+          {AR.merchantFirstVisit.yes}
+        </button>
+        <button
+          onClick={() => answer('no')}
+          className="rounded-card border border-surface-border px-4 py-2 text-sm"
+        >
+          {AR.merchantFirstVisit.no}
+        </button>
+        <button
+          onClick={() => answer('unsure')}
+          className="rounded-card border border-surface-border px-4 py-2 text-sm"
+        >
+          {AR.merchantFirstVisit.unsure}
+        </button>
+      </div>
     </div>
   );
 }

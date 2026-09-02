@@ -51,6 +51,48 @@ export default async function OpsDashboard() {
         <Metric label="F3 → F4" value={dash(m.f3ToF4Pct)} />
       </Section>
 
+      <Section title="تجربة التذكيرات — Treatment مقابل Holdout (A1)">
+        <Metric label="مشتركون في التذكيرات" value={m.reminderSubscribers} />
+        <Metric
+          label={`MRAF — Treatment (n=${m.reminderExperiment.treatment.n})`}
+          value={dash(m.reminderExperiment.treatment.mrafRatePct)}
+        />
+        <Metric
+          label={`MRAF — Holdout (n=${m.reminderExperiment.holdout.n})`}
+          value={dash(m.reminderExperiment.holdout.mrafRatePct)}
+        />
+        {(m.reminderExperiment.treatment.sampleTooSmall ||
+          m.reminderExperiment.holdout.sampleTooSmall) && (
+          <p className="col-span-full text-xs text-state-warn">
+            العينة صغيرة جدًا للاعتماد عليها إحصائيًا (أقل من 30 مشتركًا لكل مجموعة).
+          </p>
+        )}
+      </Section>
+
+      <Section title="نسبة الإكمال حسب مصدر الاكتساب (A2)">
+        {m.completionBySource.length === 0 ? (
+          <Metric label="لا بيانات بعد" value={0} />
+        ) : (
+          m.completionBySource.map((s) => (
+            <Metric key={s.source} label={`${s.source} (${s.views} مشاهدة)`} value={dash(s.completionRatePct)} />
+          ))
+        )}
+      </Section>
+
+      <Section title="نقاط التوزيع لكل مباراة (مخطط/منفَّذ) (A2)">
+        {m.touchpointsByFixture.length === 0 ? (
+          <Metric label="لا مباريات" value={0} />
+        ) : (
+          m.touchpointsByFixture.map((t) => (
+            <Metric
+              key={t.fixtureId}
+              label={t.zeroDelivered ? `⚠️ ${t.opponentAr} — لا توزيع مُنفَّذ` : t.opponentAr}
+              value={`${t.delivered}/${t.planned}`}
+            />
+          ))
+        )}
+      </Section>
+
       <Section title="المستوى والتفاعل">
         <Metric label="متوسط النقاط" value={m.averageXp ?? '—'} />
         <Metric label="نتائج مضبوطة" value={m.exactScoreSuccesses} />
@@ -84,17 +126,38 @@ export default async function OpsDashboard() {
         )}
       </Section>
 
-      <Section title="التجاري">
+      {/* A3 — the honest commercial funnel: eligible population is the
+          denominator for claim rate, not the total audience. */}
+      <Section title="القمع التجاري — وصلنا ← شاركوا ← المؤهلون ← طالبوا ← استلموا">
+        <Metric label="وصلنا" value={m.reachedCount} />
+        <Metric label="شاركوا" value={m.participatedCount} />
+        <Metric label="المؤهلون للمنفعة" value={m.eligiblePopulation} />
+        <Metric label="طالبوا بالمنفعة" value={m.benefitsIssued} />
+        <Metric label="استلموا فعليًا" value={m.redemptionsValidated} />
+        <Metric label="نسبة الطلب من المؤهلين" value={dash(m.claimRateOfEligiblePct)} />
         <Metric label="مشاهدات المنفعة" value={m.benefitViews} />
         <Metric label="تحقق OTP" value={m.otpVerified} />
-        <Metric label="مزايا صادرة" value={m.benefitsIssued} />
-        <Metric label="عمليات استلام" value={m.redemptionsValidated} />
         <Metric label="إصدار→استلام" value={dash(m.claimToRedemptionPct)} />
       </Section>
+
+      {m.benefitBlockedByReason.length > 0 && (
+        <Section title="أسباب حجب المنفعة (تشخيصي — ليس ضعف اهتمام بالضرورة)">
+          {m.benefitBlockedByReason.map((r) => (
+            <Metric key={r.reason} label={r.reason} value={r.count} />
+          ))}
+        </Section>
+      )}
 
       <Section title="التنفيذ والدعم">
         <Metric label="محاولات فاشلة" value={m.redemptionFailed} />
         <Metric label="طلبات دعم" value={m.supportRequests} />
+      </Section>
+
+      <Section title="متوسط وقت التنفيذ لكل مباراة — دقائق (A5)">
+        <Metric label="إعداد الأسئلة" value={m.avgMinutesPerFixture.questionSet ?? '—'} />
+        <Metric label="التحقق" value={m.avgMinutesPerFixture.verification ?? '—'} />
+        <Metric label="الحسم" value={m.avgMinutesPerFixture.resolution ?? '—'} />
+        <Metric label="تقرير الراعي" value={m.avgMinutesPerFixture.sponsorReporting ?? '—'} />
       </Section>
     </div>
   );

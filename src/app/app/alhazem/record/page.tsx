@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import { BrandHeader, Card, StatTile, ResultPill } from '@/components/ui';
 import { StatusCard } from '@/components/StatusCard';
+import { ReminderStatus } from '@/components/ReminderStatus';
 import { getSupporterRecord, type RecordEntry } from '@/lib/data/record';
+import { getSupporterState } from '@/lib/identity/supporter';
+import { getReminderSubscription } from '@/lib/data/reminders';
 import { formatRiyadhDate } from '@/lib/i18n/format';
 import { AR } from '@/lib/i18n/ar';
 
@@ -15,6 +18,10 @@ function outcomeLabel(o: string, opponentAr: string): string {
 
 export default async function RecordPage() {
   const record = await getSupporterRecord();
+  const supporter = await getSupporterState();
+  const reminderSubscription = supporter.supporterId
+    ? await getReminderSubscription(supporter.supporterId)
+    : null;
 
   return (
     <div className="app-shell">
@@ -80,6 +87,8 @@ export default async function RecordPage() {
                 </p>
               )}
             </section>
+
+            <ReminderStatus initiallyActive={reminderSubscription?.state === 'active'} />
 
             {/* D — Prediction history */}
             <section aria-label={AR.record.heading} className="space-y-3">
