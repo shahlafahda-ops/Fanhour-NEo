@@ -32,12 +32,12 @@ distinct fixtures here — never edits.**
 for cross-device dedupe without exposing the number.
 
 ### campaign
-`compliance_mode` ∈ {engagement_only, participation_benefit, regulated_prize}.
-CHECK `campaign_regulated_requires_approval` forbids activating a regulated
-prize without `legal_approval_status='approved'`. CHECK
+`compliance_mode` ∈ {engagement_only, participation_benefit}. CHECK
 `campaign_active_needs_fixture` forbids an active benefit campaign with no
 fixture. `issued_count ≤ issue_cap` (CHECK). Eligibility mode defaults to
-`fixture_participation`.
+`fixture_participation`. FanHour does not model or gate on legal/regulatory
+approval — that review happens outside the product, before a campaign is
+ever entered here.
 
 ### claim
 `token_hash` (unique) = SHA-256 of a 192-bit opaque token; `fallback_code`
@@ -55,9 +55,9 @@ one claim per supporter per campaign. Status ∈ {issued, redeemed, expired, voi
 - `increment_rate_limit` — atomic fixed-window counter.
 
 ## Verified against a live Postgres
-Cap enforcement, single-use redemption, prediction/claim uniqueness, and the
-regulated-prize guard were exercised against a real Postgres 16 instance during
-build (see docs/TESTING.md → "DB invariant checks").
+Cap enforcement, single-use redemption, and prediction/claim uniqueness were
+exercised against a real Postgres 16 instance during build (see
+docs/TESTING.md → "DB invariant checks").
 
 ## Pilot 1 status layer — derived, never persisted
 

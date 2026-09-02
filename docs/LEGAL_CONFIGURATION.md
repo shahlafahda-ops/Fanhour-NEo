@@ -3,16 +3,16 @@
 > FanHour does not invent legal conclusions. Where final wording or an approval
 > is missing, the product surfaces a visible blocker rather than guessing.
 
-## Compliance operating modes (per campaign)
+## Campaign operating modes
 - **engagement_only** — no prize, no commercial benefit.
 - **participation_benefit** — sponsor-funded benefit, independent of prediction
   accuracy. Default for Pilot 1 sponsor activations.
-- **regulated_prize** — DISABLED by default. Cannot be activated unless
-  `legal_approval_status = 'approved'` (enforced by DB CHECK and by
-  `campaignCanGoLive`). Fields: `compliance_mode`, `legal_approval_status`,
-  `legal_reference`, `approved_at`, `approved_by`.
 
-Skill-based structure is **not** treated as automatically exempt.
+Any legal or regulatory review of a campaign (prize rules, raffle
+regulations, sponsor terms) happens outside FanHour, before the campaign is
+ever entered into the system. The product does not track an approval status,
+gate activation on one, or infer any legal conclusion of its own — that
+review is handled by FanHour's own legal counsel, not by this codebase.
 
 ## Benefit rules (Pilot 1)
 - Benefits are **additive**, framed as "منفعة جمهور الحزم / ميزة من الشريك" —

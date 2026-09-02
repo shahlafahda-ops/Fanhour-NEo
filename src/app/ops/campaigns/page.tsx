@@ -16,7 +16,7 @@ export default async function OpsCampaignsPage({
     supabase.from('fixture').select('id, opponent_ar, kickoff_at').order('kickoff_at', { ascending: false }).limit(20),
     supabase
       .from('campaign')
-      .select('id, title_ar, compliance_mode, is_active, issued_count, issue_cap, legal_approval_status, fixture_id, benefit_ar, terms_ar, expires_at')
+      .select('id, title_ar, compliance_mode, is_active, issued_count, issue_cap, fixture_id, benefit_ar, terms_ar, expires_at')
       .order('created_at', { ascending: false }),
   ]);
 
@@ -72,9 +72,8 @@ export default async function OpsCampaignsPage({
           <input name="imageUrl" placeholder="رابط صورة الجائزة/المنفعة (اختياري)" className="input" dir="ltr" />
           <textarea name="terms" placeholder="الشروط" className="input" rows={2} />
           <select name="complianceMode" className="input">
-            <option value="participation_benefit">منفعة مشاركة (بدون جائزة)</option>
+            <option value="participation_benefit">منفعة مشاركة</option>
             <option value="engagement_only">تفاعل فقط</option>
-            <option value="regulated_prize">جائزة منظمة (تتطلب موافقة قانونية)</option>
           </select>
           <select name="revealTiming" className="input">
             <option value="post_result">بعد النتيجة</option>

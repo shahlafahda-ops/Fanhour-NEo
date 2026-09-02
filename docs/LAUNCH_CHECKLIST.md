@@ -12,7 +12,7 @@ verified in this codebase.
 - 🔴 Final campaign partner + campaign terms, cap, and expiry
 - 🔴 Benefit fulfilment confirmed with the merchant
 - 🟢 Fixture create/resolve workflow (ops)
-- 🟢 Campaign launch guard (regulated prizes blocked without legal approval)
+- 🟢 Campaign launch guard (required fields must be set before activation)
 
 ## Identity & security
 - 🔴 OTP provider credentials configured; `OTP_PROVIDER` ≠ `mock`
@@ -29,7 +29,7 @@ verified in this codebase.
 
 ## Data & compliance
 - 🔴 `ALLOW_TEST_DATA=false` in production and DB contains no test rows
-- 🔴 Legal/compliance mode approved for the live campaign
+- 🔴 Live campaign reviewed by FanHour's own legal counsel before activation (outside this codebase)
 - 🟢 `assertProductionSafety()` guard (fails mock OTP / test data in prod)
 - 🟢 Consent versioning, data-minimisation copy, withdrawable marketing consent
 

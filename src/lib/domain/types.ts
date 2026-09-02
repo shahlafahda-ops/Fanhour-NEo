@@ -26,13 +26,14 @@ export type ClaimStatus =
   | 'expired' // passed expiry without redemption (terminal)
   | 'void'; // cancelled by ops (terminal)
 
-/** Legal operating mode of a campaign. */
+/**
+ * Operating mode of a campaign. Legal/regulatory review of any campaign
+ * happens outside FanHour before it is entered here — the product does not
+ * model or gate on legal approval.
+ */
 export type ComplianceMode =
   | 'engagement_only' // no prize, no commercial benefit
-  | 'participation_benefit' // sponsor-funded, independent of prediction accuracy
-  | 'regulated_prize'; // DISABLED by default; requires explicit legal approval
-
-export type LegalApprovalStatus = 'not_required' | 'pending' | 'approved' | 'rejected';
+  | 'participation_benefit'; // sponsor-funded, independent of prediction accuracy
 
 /** When the benefit is revealed to the supporter. */
 export type BenefitRevealTiming = 'post_submission' | 'post_result';
