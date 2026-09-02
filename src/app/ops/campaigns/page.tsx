@@ -16,7 +16,7 @@ export default async function OpsCampaignsPage({
     supabase.from('fixture').select('id, opponent_ar, kickoff_at').order('kickoff_at', { ascending: false }).limit(20),
     supabase
       .from('campaign')
-      .select('id, title_ar, compliance_mode, is_active, issued_count, issue_cap, fixture_id, benefit_ar, terms_ar, expires_at')
+      .select('id, slug, title_ar, compliance_mode, is_active, issued_count, issue_cap, fixture_id, benefit_ar, terms_ar, expires_at')
       .order('created_at', { ascending: false }),
   ]);
 
@@ -110,6 +110,12 @@ export default async function OpsCampaignsPage({
                 {c.is_active ? 'مفعّلة' : 'متوقفة'}
               </span>
             </div>
+            <a
+              href={`/ops/sponsor-report/${c.slug}`}
+              className="text-brand-green text-xs underline"
+            >
+              تقرير قيمة الراعي
+            </a>
             <form action={setCampaignActive}>
               <input type="hidden" name="campaignId" value={c.id} />
               <input type="hidden" name="activate" value={String(!c.is_active)} />

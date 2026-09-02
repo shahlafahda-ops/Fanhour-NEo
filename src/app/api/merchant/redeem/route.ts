@@ -105,7 +105,9 @@ export async function POST(req: Request) {
     props: { claim_id: claim.id, outcome: result },
   });
 
-  return statusResponse(result, claim.campaign_id as string);
+  // claimId is only surfaced on success — it lets the merchant UI offer the
+  // optional A4 first-visit tap right after a redemption, never before.
+  return statusResponse(result, claim.campaign_id as string, result === 'redeemed' ? claim.id as string : undefined);
 }
 
 function previewOutcome(status: string, expiresAt: string | null): RedemptionOutcome {
@@ -116,11 +118,12 @@ function previewOutcome(status: string, expiresAt: string | null): RedemptionOut
   return 'redeemed'; // "valid" preview
 }
 
-function statusResponse(outcome: RedemptionOutcome, campaignId?: string) {
+function statusResponse(outcome: RedemptionOutcome, campaignId?: string, claimId?: string) {
   // Merchant sees status + campaign only — never PII (prompt §29).
   return NextResponse.json({
     outcome,
     statusAr: REDEMPTION_STATUS_AR[outcome],
     campaignId: campaignId ?? null,
+    claimId: claimId ?? null,
   });
 }

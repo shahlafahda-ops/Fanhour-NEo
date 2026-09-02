@@ -26,6 +26,8 @@ export const serverConfig = {
   supabaseServiceRoleKey: str('SUPABASE_SERVICE_ROLE_KEY'),
   otpProvider: str('OTP_PROVIDER', 'mock'),
   otpSenderId: str('OTP_SENDER_ID', 'FanHour'),
+  notifyProvider: str('NOTIFY_PROVIDER', 'mock'),
+  cronSecret: str('CRON_SECRET'),
   // Dedicated pepper for phone/OTP hashes; falls back to the service key for
   // local dev only. Set HASH_PEPPER in production (see LAUNCH_CHECKLIST).
   hashPepper: str('HASH_PEPPER') || str('SUPABASE_SERVICE_ROLE_KEY') || 'dev-only-pepper',
@@ -43,6 +45,9 @@ export function assertProductionSafety(): string[] {
 
   if (serverConfig.otpProvider === 'mock') {
     errors.push('OTP_PROVIDER=mock is forbidden in production.');
+  }
+  if (serverConfig.notifyProvider === 'mock') {
+    errors.push('NOTIFY_PROVIDER=mock is forbidden in production.');
   }
   if (serverConfig.allowTestData) {
     errors.push('ALLOW_TEST_DATA=true is forbidden in production.');

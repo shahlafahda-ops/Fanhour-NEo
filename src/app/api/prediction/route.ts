@@ -16,6 +16,7 @@ import { recordEvent, recordEventOnce } from '@/lib/analytics/record';
 import { EVENTS } from '@/lib/analytics/events';
 import { evaluateCommentaryReaction } from '@/lib/domain/commentary';
 import { getFlags } from '@/lib/data/flags';
+import { getReminderSubscription } from '@/lib/data/reminders';
 
 const Body = z.object({
   fixtureId: z.string().uuid(),
@@ -104,7 +105,8 @@ export async function POST(req: Request) {
     .from('prediction')
     .select('fixture_id', { head: true, count: 'exact' })
     .eq('anonymous_session_id', anonId);
-  if ((distinctFixtures ?? 0) <= 1) {
+  const isFirstEverPrediction = (distinctFixtures ?? 0) <= 1;
+  if (isFirstEverPrediction) {
     await recordEventOnce({
       name: EVENTS.first_value_reached,
       anonymousSessionId: anonId,
@@ -115,6 +117,20 @@ export async function POST(req: Request) {
 
   // Commentary is expression only — evaluated AFTER the write, never blocking it.
   const flags = await getFlags();
+
+  // A1: offer the reminder opt-in at the moment of maximum intent — the
+  // FIRST qualified prediction — and never re-prompt someone who has already
+  // decided (subscribed or withdrawn).
+  let showReminderOptIn = false;
+  if (isFirstEverPrediction && flags.notification_timing.enabled) {
+    const { data: sess } = await supabase
+      .from('anonymous_session')
+      .select('supporter_id')
+      .eq('id', anonId)
+      .maybeSingle();
+    const supporterId = (sess?.supporter_id as string | undefined) ?? null;
+    showReminderOptIn = supporterId ? !(await getReminderSubscription(supporterId)) : true;
+  }
   const chosenSharePct = dist.percentages ? dist.percentages[parsed.outcome] : null;
   const reaction = flags.commentary_reactions.enabled
     ? evaluateCommentaryReaction({
@@ -140,6 +156,7 @@ export async function POST(req: Request) {
       chosenSharePct,
     },
     reaction,
+    showReminderOptIn,
   });
   if (isNew) {
     const opts = anonymousCookieOptions();

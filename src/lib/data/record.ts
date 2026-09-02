@@ -5,10 +5,11 @@ import { getFixtureTimeline } from '@/lib/data/fixtures';
 import type { PredictionOutcome } from '@/lib/domain/types';
 import {
   computeXp, resolveRank, isExactScoreCorrect, computeAccuracyPct,
-  xpForFixture, type RankProgress, type XpFixtureRecord,
+  xpForFixture, parseProgressionConfig, type RankProgress, type XpFixtureRecord,
 } from '@/lib/domain/progression';
 import { summarizeStreak, type FixtureStreakEntry, type StreakSummary } from '@/lib/domain/streak';
 import { classifyLifecycle, type LifecycleState } from '@/lib/domain/lifecycle';
+import { getFlags } from '@/lib/data/flags';
 
 export interface RecordEntry {
   fixtureId: string;
@@ -88,6 +89,9 @@ export async function getSupporterRecord(): Promise<SupporterRecord> {
   const filter = identityOrFilter(identity);
   if (!filter) return EMPTY;
 
+  const flags = await getFlags();
+  const progressionConfig = parseProgressionConfig(flags.progression_config.value);
+
   const supabase = getAdminClient();
   const { data } = await supabase
     .from('prediction')
@@ -139,7 +143,7 @@ export async function getSupporterRecord(): Promise<SupporterRecord> {
       predictedHazem: row.exact_hazem_score,
       predictedOpponent: row.exact_opponent_score,
       isExactCorrect,
-      xpEarned: xpForFixture(xpRec),
+      xpEarned: xpForFixture(xpRec, progressionConfig),
     });
 
     if (row.is_correct !== null) {
@@ -160,7 +164,7 @@ export async function getSupporterRecord(): Promise<SupporterRecord> {
     participated: seenFixtures.has(f.id),
   }));
 
-  const xp = computeXp(xpRecords);
+  const xp = computeXp(xpRecords, progressionConfig);
 
   return {
     entries,
@@ -171,7 +175,7 @@ export async function getSupporterRecord(): Promise<SupporterRecord> {
     accuracyPct: computeAccuracyPct(xpRecords),
     firstParticipationAt: firstAt,
     xp,
-    progress: resolveRank(xp),
+    progress: resolveRank(xp, progressionConfig),
     streak: summarizeStreak(streakTimeline),
     lifecycle: classifyLifecycle(streakTimeline),
   };
