@@ -16,7 +16,6 @@ const MISSING_FIELD_AR: Record<string, string> = {
   benefit_description: 'وصف المنفعة',
   terms: 'الشروط',
   expiry: 'تاريخ الانتهاء',
-  legal_approval: 'الموافقة القانونية',
 };
 
 function slugify(s: string): string {
@@ -97,7 +96,7 @@ export async function createCampaign(formData: FormData) {
   return;
 }
 
-/** Activate a campaign only when launch-ready (guards regulated prizes). */
+/** Activate a campaign only when launch-ready (required fields present). */
 export async function setCampaignActive(formData: FormData) {
   const actor = await requireOps(['super_admin', 'ops']);
   const supabase = getAdminClient();
@@ -109,8 +108,6 @@ export async function setCampaignActive(formData: FormData) {
 
   if (activate) {
     const check = campaignCanGoLive({
-      complianceMode: c.compliance_mode,
-      legalApprovalStatus: c.legal_approval_status,
       hasFixture: Boolean(c.fixture_id),
       hasSponsor: Boolean(c.sponsor_id),
       hasBenefitDescription: Boolean(c.benefit_ar),

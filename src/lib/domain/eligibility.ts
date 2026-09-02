@@ -35,7 +35,6 @@ export interface SupporterEligibilityContext {
 export type EligibilityReason =
   | 'eligible'
   | 'campaign_inactive'
-  | 'regulated_prize_not_approved'
   | 'no_qualifying_participation'
   | 'age_requirement_not_met'
   | 'locality_not_eligible';
@@ -45,24 +44,13 @@ export interface EligibilityResult {
   reason: EligibilityReason;
 }
 
-/**
- * Decide whether a supporter may claim a campaign's benefit.
- * `regulatedPrizeApproved` reflects whether the campaign's legal approval
- * state has been explicitly confirmed by an authorised admin (see
- * `campaignCanGoLive`). A regulated_prize campaign is never claimable unless
- * that has happened.
- */
+/** Decide whether a supporter may claim a campaign's benefit. */
 export function evaluateEligibility(
   campaign: CampaignEligibilityConfig,
   supporter: SupporterEligibilityContext,
-  opts: { regulatedPrizeApproved: boolean },
 ): EligibilityResult {
   if (!campaign.isActive) {
     return { eligible: false, reason: 'campaign_inactive' };
-  }
-
-  if (campaign.complianceMode === 'regulated_prize' && !opts.regulatedPrizeApproved) {
-    return { eligible: false, reason: 'regulated_prize_not_approved' };
   }
 
   // Participation requirement — the core correction.
@@ -76,9 +64,7 @@ export function evaluateEligibility(
   }
 
   // Age gate (only enforced for benefit-bearing modes).
-  const benefitBearing =
-    campaign.complianceMode === 'participation_benefit' ||
-    campaign.complianceMode === 'regulated_prize';
+  const benefitBearing = campaign.complianceMode === 'participation_benefit';
   if (benefitBearing && campaign.minAge > 0) {
     if (supporter.ageConfirmedMeetsRequirement !== true) {
       return { eligible: false, reason: 'age_requirement_not_met' };
@@ -96,8 +82,6 @@ export function evaluateEligibility(
 }
 
 export interface CampaignLaunchConfig {
-  complianceMode: ComplianceMode;
-  legalApprovalStatus: 'not_required' | 'pending' | 'approved' | 'rejected';
   hasFixture: boolean;
   hasSponsor: boolean;
   hasBenefitDescription: boolean;
@@ -111,11 +95,7 @@ export interface LaunchCheck {
   missing: string[];
 }
 
-/**
- * Guard preventing a campaign — especially a regulated prize — from going live
- * without required configuration and, for regulated prizes, explicit legal
- * approval (prompt §26). The system must not infer a legal conclusion.
- */
+/** Guard preventing a campaign from going live without required configuration. */
 export function campaignCanGoLive(cfg: CampaignLaunchConfig): LaunchCheck {
   const missing: string[] = [];
   if (!cfg.hasFixture) missing.push('fixture');
@@ -123,12 +103,6 @@ export function campaignCanGoLive(cfg: CampaignLaunchConfig): LaunchCheck {
   if (!cfg.hasBenefitDescription) missing.push('benefit_description');
   if (!cfg.hasTerms) missing.push('terms');
   if (!cfg.hasExpiry) missing.push('expiry');
-
-  if (cfg.complianceMode === 'regulated_prize') {
-    if (cfg.legalApprovalStatus !== 'approved') {
-      missing.push('legal_approval');
-    }
-  }
 
   return { canGoLive: missing.length === 0, missing };
 }

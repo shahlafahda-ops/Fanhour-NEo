@@ -5,7 +5,6 @@ import type {
   BenefitRevealTiming,
   CampaignEligibilityMode,
   ComplianceMode,
-  LegalApprovalStatus,
   LocalitySegment,
 } from '@/lib/domain/types';
 
@@ -24,7 +23,6 @@ export interface CampaignRow {
   eligibilityMode: CampaignEligibilityMode;
   revealTiming: BenefitRevealTiming;
   complianceMode: ComplianceMode;
-  legalApprovalStatus: LegalApprovalStatus;
   minAge: number;
   allowedLocalities: LocalitySegment[];
   expiresAt: string | null;
@@ -49,7 +47,6 @@ function mapRow(r: Record<string, unknown>): CampaignRow {
     eligibilityMode: r.eligibility_mode as CampaignEligibilityMode,
     revealTiming: r.reveal_timing as BenefitRevealTiming,
     complianceMode: r.compliance_mode as ComplianceMode,
-    legalApprovalStatus: r.legal_approval_status as LegalApprovalStatus,
     minAge: r.min_age as number,
     allowedLocalities: (r.allowed_localities as LocalitySegment[]) ?? [],
     expiresAt: (r.expires_at as string) ?? null,

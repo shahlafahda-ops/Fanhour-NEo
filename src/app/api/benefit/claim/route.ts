@@ -95,7 +95,6 @@ export async function POST(req: Request) {
         parsed.ageConfirmed ?? supporter.ageMeetsRequirement,
       localitySegment: parsed.locality ?? supporter.locality,
     },
-    { regulatedPrizeApproved: campaign.legalApprovalStatus === 'approved' },
   );
 
   if (!eligibility.eligible) {
